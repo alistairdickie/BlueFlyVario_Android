@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+            android:title="Basic Settings"
+            android:key="basic_category">
+
+
+        <EditTextPreference
+                android:key="alt_setalt"
+                android:title="Set Altitude"
+                android:summary="The fixed value to set the altitude to"
+                android:dialogTitle="Set Altitude"
+                android:dialogMessage="Sets the altitude and then updates QNH"
+                android:defaultValue="0"
+                android:numeric="integer"
+                />
+        <EditTextPreference
+                android:key="alt_setqnh"
+                android:title="Set QNH"
+                android:summary="The local QNH to use for altitude"
+                android:dialogTitle="Set QNH in hPa"
+                android:dialogMessage="Sets the QNH value in hPa for altitude measurements"
+                android:defaultValue="1013.25"
+                android:numeric="decimal"
+                />
+
+        <CheckBoxPreference
+                android:key="alt_setgps"
+                android:title="Set Altitude from GPS"
+                android:summary="Sets the QNH value based on the first (or next) GPS altitude reading"
+                android:defaultValue="false"
+
+                />
+        <CheckBoxPreference
+                android:key="audio_enabled"
+                android:title="Enable vario beeping"
+                android:summary=""
+                android:defaultValue="true"
+
+                />
+
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+            android:title="Advanced Settings"
+            android:key="advanced_category">
+        <PreferenceScreen
+                android:key="display_screen_advanced"
+                android:title="Layout and Display"
+                android:persistent="false">
+            <CheckBoxPreference
+                    android:key="layout_enabled"
+                    android:title="Enable layout mode"
+                    android:summary="Set parameters of components in each viewPage by tapping on them and enable the viewPage menu"
+                    android:defaultValue="true"
+
+                    />
+            <CheckBoxPreference
+                    android:key="layout_draw_touch_points"
+                    android:title="Draw touch points"
+                    android:summary="See the touch points on components for selecting or dragging"
+                    android:defaultValue="false"
+                    android:dependency="layout_enabled"
+                    />
+            <EditTextPreference
+                    android:key="layout_parameter_select_radius"
+                    android:title="Parameter Select Radius"
+                    android:summary="The radius in pixels around the center of a component that will respond to your taps"
+                    android:defaultValue="30"
+                    android:numeric="integer"
+                    android:dependency="layout_enabled"
+                    />
+            <CheckBoxPreference
+                    android:key="layout_drag_enabled"
+                    android:title="Enable layout drag mode"
+                    android:summary="Drag components to resize and move them"
+                    android:defaultValue="true"
+                    android:dependency="layout_enabled"
+
+                    />
+            <EditTextPreference
+                    android:key="layout_drag_select_radius"
+                    android:title="Drag Select Radius"
+                    android:summary="The distance in pixels from a dragable edge or center of a component"
+                    android:defaultValue="20"
+                    android:numeric="integer"
+                    android:dependency="layout_drag_enabled"
+                    />
+            <CheckBoxPreference
+                    android:key="layout_resize_orientation_change"
+                    android:title="Resize on orientation"
+                    android:summary="Components will be resized based on a screen orientation change"
+                    android:defaultValue="true"
+
+                    />
+            <CheckBoxPreference
+                    android:key="layout_resize_import"
+                    android:title="Resize on import"
+                    android:summary="Components will be resized when imported"
+                    android:defaultValue="true"
+
+                    />
+
+
+            <EditTextPreference
+                    android:key="display_varioBufferSize"
+                    android:title="Vario Buffer Size"
+                    android:summary="The size of the Vario buffer display in measurements"
+                    android:dialogTitle="Vario Buffer Size"
+                    android:dialogMessage="The size of the Vario buffer display in measurements. Use with buffer rate. The time of the display in seconds is 'Buffer Size' / 50 x 'Buffer Rate'"
+                    android:defaultValue="600"
+                    android:numeric="integer"/>
+            <EditTextPreference
+                    android:key="display_varioBufferRate"
+                    android:title="Vario Buffer Rate"
+                    android:summary="The rate at which measurements are taken in the vario buffer"
+                    android:dialogTitle="Vario Buffer Rate"
+                    android:dialogMessage="The rate at which vario measurements are made from the pressure stream for display purposes. 3 means that 1 in 3 pressure readings are used as measurements in the vario data buffer. The time of the display in seconds is 'Buffer Size' / 50 x 'Buffer Rate' "
+                    android:defaultValue="10"
+                    android:numeric="integer"
+                    />
+
+        </PreferenceScreen>
+        <PreferenceScreen
+                android:key="location_screen_advanced"
+                android:title="Location"
+                android:persistent="false">
+            <CheckBoxPreference
+                    android:key="location_askEnableGPS"
+                    android:title="Enable GPS"
+                    android:summary="Ask me if you want GPS to be enabled"
+                    android:defaultValue="true"
+
+                    />
+
+
+        </PreferenceScreen>
+
+
+        <PreferenceScreen
+                android:key="bluetooth_screen_advanced"
+                android:title="Bluetooth"
+                android:persistent="false">
+            <CheckBoxPreference
+                    android:key="bluetooth_autoconnect"
+                    android:title="Connect on start"
+                    android:summary="Auto connect to the last BFV successfully connected to on application start"
+                    android:defaultValue="false"/>
+            <EditTextPreference
+                    android:key="bluetooth_macAddress"
+                    android:title="BFV Device mac address"
+
+                    android:summary="The mac address of the last BFV connected"
+                    android:dialogTitle="BFV Device mac address"
+                    android:dialogMessage="Manually enter the mac address"
+                    android:defaultValue=""/>
+            <EditTextPreference
+                    android:key="bluetooth_deviceName"
+                    android:title="BFV Device name"
+                    android:summary="The bluetooth name of the last BFV connected"
+                    android:defaultValue=""/>
+            <ListPreference
+                    android:key="bluetooth_connectMethod"
+                    android:title="Bluetooth connect method"
+                    android:dialogTitle="Bluetooth connect method"
+                    android:entries="@array/bluetoothConnectEntries"
+                    android:entryValues="@array/bluetoothConnectValues"
+                    android:defaultValue="1"
+                    />
+        </PreferenceScreen>
+
+        <PreferenceScreen
+                android:title="Vario"
+                android:key="vario_category">
+            <EditTextPreference
+                    android:key="alt_damp"
+                    android:title="Altitude Damping Factor"
+                    android:summary="The damping filter factor for Altitude measurements"
+                    android:dialogTitle="Altitude Damping Factor"
+                    android:dialogMessage="Advanced users only - set to 0.05 by default"
+                    android:defaultValue="0.05"
+                    android:numeric="decimal"
+                    />
+            <PreferenceScreen
+                    android:key="var1_screen_advanced"
+                    android:title="Instantaneous - Vario 1"
+                    android:persistent="false">
+
+                <EditTextPreference
+                        android:key="var1_window"
+                        android:title="Vario 1 Window"
+                        android:summary="The number of measurements in the vario1 linear regression window"
+                        android:dialogTitle="Vario 1 Window"
+                        android:dialogMessage="Advanced users only - set to 75 by default"
+                        android:defaultValue="75"
+                        android:numeric="integer"
+                        />
+                <EditTextPreference
+                        android:key="var1_damp"
+                        android:title="Vario 1 Damping"
+                        android:summary="The damping filter factor for Vario1 measurements"
+                        android:dialogTitle="Vario 1 Damping"
+                        android:dialogMessage="Advanced users only - set to 0.05 by default"
+                        android:defaultValue="0.05"
+                        android:numeric="decimal"
+                        />
+                <ListPreference
+                        android:key="var1_useAltType"
+                        android:title="Vario 1 Alt Type"
+                        android:dialogTitle="Vario 1 Alt Type"
+                        android:entries="@array/useAltTypeEntries"
+                        android:entryValues="@array/useAltTypeValues"
+                        android:defaultValue="2"
+                        />
+            </PreferenceScreen>
+            <PreferenceScreen
+                    android:key="var2_screen_advanced"
+                    android:title="Averaged - Vario 2"
+                    android:persistent="false">
+
+                <EditTextPreference
+                        android:key="var2_window"
+                        android:title="Vario 2 Window"
+                        android:summary="The number of measurements in the vario2 linear regression window"
+                        android:dialogTitle="Vario 2 Window"
+                        android:dialogMessage="Advanced users only - set to 200 by default"
+                        android:defaultValue="200"
+                        android:numeric="integer"
+                        />
+                <EditTextPreference
+                        android:key="var2_damp"
+                        android:title="Vario 2 Damping"
+                        android:summary="The damping filter factor for Vario2 measurements"
+                        android:dialogTitle="Vario 2 Damping"
+                        android:dialogMessage="Advanced users only - set to 1.0 by default"
+                        android:defaultValue="1.0"
+                        android:numeric="decimal"
+                        />
+                <ListPreference
+                        android:key="var2_useAltType"
+                        android:title="Vario 2 Alt Type"
+                        android:dialogTitle="Vario 2 Alt Type"
+                        android:entries="@array/useAltTypeEntries"
+                        android:entryValues="@array/useAltTypeValues"
+                        android:defaultValue="1"
+                        />
+            </PreferenceScreen>
+            <PreferenceScreen
+                    android:key="audio_advanced"
+                    android:title="Audio"
+                    android:persistent="false">
+
+                <EditTextPreference
+                        android:key="audio_basehz"
+                        android:title="Vario Base Frequency"
+                        android:summary="Base tone for vario beeps"
+                        android:dialogTitle="Vario Base Frequency"
+                        android:dialogMessage="The base tone for vario beeps"
+                        android:defaultValue="700"
+                        android:numeric="integer"/>
+                <EditTextPreference
+                        android:key="audio_incrementhz"
+                        android:title="Vario Increment Frequency"
+                        android:summary="The increase in tone for each 1 m/s of vario"
+                        android:dialogTitle="Vario Increment Frequency"
+                        android:dialogMessage="For each 1 m/s of vario the audio frequency will increase by this amount"
+                        android:defaultValue="100"
+                        android:numeric="integer"
+                        />
+
+            </PreferenceScreen>
+
+
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:title="Actions"
+            android:key="actions_category">
+        <Preference
+                android:key="default"
+                android:title="Restore Default Settings"
+                android:summary="Restore all settings to the original values"
+                />
+        <Preference
+                android:key="about"
+                android:title="About"
+                android:summary="Show information about this app"
+                />
+    </PreferenceCategory>
+
+</PreferenceScreen>
+

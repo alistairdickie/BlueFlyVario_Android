@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<BlueFlyVarioViewPages currentViewPage="0">
+    <BFVViewPage backColor="#ff000000" frameWidth="480" frameHeight="724" orientation="1">
+        <Field_dampedAltitude top="1.0" right="100.0" bottom="61.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                              backColor="#ff000000" label="Alt: m" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                              valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" fieldUnits="0"
+                              valueDecimialFormat="#0"/>
+        <Field_vario2 top="66.0" right="100.0" bottom="126.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                      backColor="#ff000000" label="Var Avg: m/s" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                      valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" fieldUnits="0"
+                      valueDecimialFormat="#0.0"/>
+        <Field_flightTime top="131.0" right="100.0" bottom="191.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                          backColor="#ff000000" label="Flight Time: s" labelSize="14.0" valueSize="38.0"
+                          labelAlignment="1" valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00"
+                          valueDecimialFormat="#0"/>
+        <Field_bat top="196.0" right="100.0" bottom="256.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                   backColor="#ff000000" label="Battery: " labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                   valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" valueDecimialFormat="#0%"/>
+        <VarioTrace top="258.0" right="479.0" bottom="723.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                    backColor="#ff000000" prop="0.25" traceVario="1" scaleVario="0" maxThreshold="0.20"
+                    dotsInsteadOfLines="false"/>
+        <Location top="1.0" right="479.0" bottom="258.0" left="102.0" lineWidth="1.0" lineColor="#ffffffff"
+                  backColor="#ff000000" rotate="true" innerRing="50.0" outerRing="300.0" wingSize="10.0"
+                  traceWidth="5.0" displayThreshold="-0.10" dotsInsteadOfLines="false" driftLocations="false"/>
+    </BFVViewPage>
+    <BFVViewPage backColor="#ff000000" frameWidth="480" frameHeight="724" orientation="1">
+        <Label top="1.0" right="479.0" bottom="50.0" left="1.0" lineWidth="1.0" lineColor="#00ffffff"
+               backColor="#ff000032" label="All Fields" labelSize="45.0" labelAlignment="0" labelColor="#ffffff00"/>
+        <Field_dampedAltitude top="61.0" right="239.0" bottom="121.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                              backColor="#ff000000" label="Alt: m" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                              valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" fieldUnits="0"
+                              valueDecimialFormat="#0.0"/>
+        <Field_rawAltitude top="61.0" right="480.0" bottom="121.0" left="242.0" lineWidth="1.0" lineColor="#ffffffff"
+                           backColor="#ff000000" label="Raw Alt: m" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                           valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" fieldUnits="0"
+                           valueDecimialFormat="#0.0"/>
+        <Field_vario1 top="124.0" right="239.0" bottom="184.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                      backColor="#ff000000" label="Var: m/s" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                      valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" fieldUnits="0"
+                      valueDecimialFormat="#0.0"/>
+        <Field_vario2 top="124.0" right="480.0" bottom="184.0" left="242.0" lineWidth="1.0" lineColor="#ffffffff"
+                      backColor="#ff000000" label="Var Avg: m/s" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                      valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" fieldUnits="0"
+                      valueDecimialFormat="#0.0"/>
+        <Field_bat top="187.0" right="239.0" bottom="247.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                   backColor="#ff000000" label="Battery: " labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                   valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" valueDecimialFormat="#0%"/>
+        <Field_fps top="187.0" right="480.0" bottom="247.0" left="242.0" lineWidth="1.0" lineColor="#ffffffff"
+                   backColor="#ff000000" label="ViewFPS: " labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                   valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" valueDecimialFormat="#0.0"/>
+        <Field_latitude top="250.0" right="239.0" bottom="310.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                        backColor="#ff000000" label="Latitude: d.d" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                        valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" fieldUnits="0"
+                        valueDecimialFormat="#0.00000"/>
+        <Field_longitude top="250.0" right="480.0" bottom="310.0" left="242.0" lineWidth="1.0" lineColor="#ffffffff"
+                         backColor="#ff000000" label="Longitude: d.d" labelSize="14.0" valueSize="38.0"
+                         labelAlignment="1" valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00"
+                         fieldUnits="0" valueDecimialFormat="#0.00000"/>
+        <Field_gpsAccuracy top="313.0" right="239.0" bottom="373.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                           backColor="#ff000000" label="gpsAccuracy: m" labelSize="14.0" valueSize="38.0"
+                           labelAlignment="1" valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00"
+                           valueDecimialFormat="#0"/>
+        <Field_gpsAltitude top="313.0" right="480.0" bottom="373.0" left="242.0" lineWidth="1.0" lineColor="#ffffffff"
+                           backColor="#ff000000" label="GPSAlt: m" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                           valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" fieldUnits="0"
+                           valueDecimialFormat="#0.0"/>
+        <Field_groundSpeed top="376.0" right="239.0" bottom="436.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                           backColor="#ff000000" label="GroundSpeed: km/hr" labelSize="14.0" valueSize="38.0"
+                           labelAlignment="1" valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00"
+                           fieldUnits="1" valueDecimialFormat="#0.0"/>
+        <Field_heading top="376.0" right="480.0" bottom="436.0" left="242.0" lineWidth="1.0" lineColor="#ffffffff"
+                       backColor="#ff000000" label="Heading: °" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                       valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" valueDecimialFormat="#0"/>
+        <Field_windDirection top="439.0" right="239.0" bottom="499.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                             backColor="#ff000000" label="Wind: °" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                             valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" valueDecimialFormat="#0"/>
+        <Field_windSpeed top="439.0" right="480.0" bottom="499.0" left="242.0" lineWidth="1.0" lineColor="#ffffffff"
+                         backColor="#ff000000" label="WindSpeed: km/hr" labelSize="14.0" valueSize="38.0"
+                         labelAlignment="1" valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00"
+                         fieldUnits="1" valueDecimialFormat="#0.0"/>
+        <Field_airSpeed top="502.0" right="239.0" bottom="562.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                        backColor="#ff000000" label="AirSpeed: km/hr" labelSize="14.0" valueSize="38.0"
+                        labelAlignment="1" valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00"
+                        fieldUnits="1" valueDecimialFormat="#0.0"/>
+        <Field_qnh top="502.0" right="480.0" bottom="562.0" left="242.0" lineWidth="1.0" lineColor="#ffffffff"
+                   backColor="#ff000000" label="QNH: hPa" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                   valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" valueDecimialFormat="#0.00"/>
+        <Field_flightTime top="565.0" right="239.0" bottom="625.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                          backColor="#ff000000" label="Flight Time: s" labelSize="14.0" valueSize="38.0"
+                          labelAlignment="1" valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00"
+                          valueDecimialFormat="#0"/>
+        <Field_flightDistance top="565.0" right="480.0" bottom="625.0" left="242.0" lineWidth="1.0"
+                              lineColor="#ffffffff" backColor="#ff000000" label="Flight Distance: km" labelSize="14.0"
+                              valueSize="38.0" labelAlignment="1" valueAlignment="0" labelColor="#ffffffff"
+                              valueColor="#ff00ff00" fieldUnits="1" valueDecimialFormat="#0.000"/>
+    </BFVViewPage>
+    <BFVViewPage backColor="#ff000000" frameWidth="480" frameHeight="724" orientation="1">
+        <Location top="244.0" right="479.0" bottom="723.0" left="1.0" lineWidth="1.0" lineColor="#00ffffff"
+                  backColor="#ff000000" rotate="false" innerRing="50.0" outerRing="300.0" wingSize="10.0"
+                  traceWidth="3.0" displayThreshold="-100.00" dotsInsteadOfLines="false" driftLocations="false"/>
+        <Label top="1.0" right="479.0" bottom="67.0" left="1.0" lineWidth="1.0" lineColor="#00ffffff"
+               backColor="#ff000032" label="Location Example" labelSize="35.0" labelAlignment="0"
+               labelColor="#ffffff00"/>
+    </BFVViewPage>
+    <BFVViewPage backColor="#ff000000" frameWidth="480" frameHeight="724" orientation="1">
+        <Label top="1.0" right="479.0" bottom="50.0" left="1.0" lineWidth="1.0" lineColor="#00ffffff"
+               backColor="#ff000032" label="Wind Trace Example" labelSize="35.0" labelAlignment="0"
+               labelColor="#ffffff00"/>
+        <WindTrace top="382.0" right="320.0" bottom="723.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                   backColor="#ff000000" manualScale="false" scale="11.837394714355469"/>
+        <Location top="52.0" right="320.0" bottom="380.0" left="1.0" lineWidth="1.0" lineColor="#ffffffff"
+                  backColor="#ff000000" rotate="false" innerRing="50.0" outerRing="300.0" wingSize="10.0"
+                  traceWidth="5.0" displayThreshold="-0.10" dotsInsteadOfLines="true" driftLocations="true"/>
+        <Field_groundSpeed top="114.0" right="480.0" bottom="174.0" left="322.0" lineWidth="1.0" lineColor="#ffffffff"
+                           backColor="#ff000000" label="GroundSpeed: km/hr" labelSize="14.0" valueSize="38.0"
+                           labelAlignment="1" valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00"
+                           fieldUnits="1" valueDecimialFormat="#0.0"/>
+        <Field_heading top="52.0" right="480.0" bottom="112.0" left="322.0" lineWidth="1.0" lineColor="#ffffffff"
+                       backColor="#ff000000" label="Heading: °" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                       valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" valueDecimialFormat="#0"/>
+        <Field_windSpeed top="506.0" right="480.0" bottom="566.0" left="322.0" lineWidth="1.0" lineColor="#ffffffff"
+                         backColor="#ff000000" label="WindSpeed: km/hr" labelSize="14.0" valueSize="38.0"
+                         labelAlignment="1" valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00"
+                         fieldUnits="1" valueDecimialFormat="#0.0"/>
+        <Field_windDirection top="444.0" right="480.0" bottom="504.0" left="322.0" lineWidth="1.0" lineColor="#ffffffff"
+                             backColor="#ff000000" label="Wind: °" labelSize="14.0" valueSize="38.0" labelAlignment="1"
+                             valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00" valueDecimialFormat="#0"/>
+        <Field_airSpeed top="382.0" right="480.0" bottom="442.0" left="322.0" lineWidth="1.0" lineColor="#ffffffff"
+                        backColor="#ff000000" label="AirSpeed: km/hr" labelSize="14.0" valueSize="38.0"
+                        labelAlignment="1" valueAlignment="0" labelColor="#ffffffff" valueColor="#ff00ff00"
+                        fieldUnits="1" valueDecimialFormat="#0.0"/>
+    </BFVViewPage>
+</BlueFlyVarioViewPages>
