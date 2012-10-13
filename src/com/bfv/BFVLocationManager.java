@@ -186,9 +186,15 @@ public class BFVLocationManager implements LocationListener {
         }
     }
 
-    public void onDestroy() {
+    public void stopLocationUpdates() {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         locationManager.removeUpdates(this);
+
+    }
+
+
+    public void onDestroy() {
+        stopLocationUpdates();
     }
 
     private void enableLocationSettings() {
@@ -222,7 +228,8 @@ public class BFVLocationManager implements LocationListener {
 
 
         calculateDisplayableLocations();
-        bfvService.updateFlight(newLoc);
+        bfvService.updateLocation(newLoc);
+
 
     }
 
@@ -241,7 +248,8 @@ public class BFVLocationManager implements LocationListener {
     }
 
     public void onProviderDisabled(String s) {
-        startLocationUpdates();
+        stopLocationUpdates();
+        setState(STATE_GPS_NOT_ENABLED);
     }
 
 

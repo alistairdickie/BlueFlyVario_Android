@@ -441,6 +441,11 @@ public class BFVService {
         setFlightStatus(BFVService.FLIGHT_STATUS_NONE);
     }
 
+    public void updateLocation(LocationAltVar loc) {
+        updateFlight(loc);
+        BlueFlyVario.blueFlyVario.getVarioSurface().updateLocation(loc);
+    }
+
     public void updateFlight(LocationAltVar loc) {
         if (flight != null) {
             flight.addLocationAltVar(loc);

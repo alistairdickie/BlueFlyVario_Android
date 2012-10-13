@@ -34,7 +34,7 @@
     <string name="title_other_devices">Other Available Devices</string>
     <string name="button_scan">Scan for devices</string>
 
-    <!-- ViewComponentListActivity -->
+    <!-- ParamatizedComponentListActivity -->
 
     <string name="set_parameters">Edit parameters</string>
 

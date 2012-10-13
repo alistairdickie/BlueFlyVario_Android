@@ -6,6 +6,7 @@ import android.widget.FrameLayout;
 import com.bfv.util.DistanceUtil;
 import com.bfv.util.Line2d;
 import com.bfv.util.Point2d;
+import com.bfv.view.ParamatizedComponent;
 import com.bfv.view.VarioSurfaceView;
 import com.bfv.view.ViewComponentParameter;
 
@@ -17,7 +18,7 @@ import java.util.ArrayList;
  * Date: 27/08/12
  * Time: 8:13 PM
  */
-public abstract class BFVViewComponent {
+public abstract class BFVViewComponent implements ParamatizedComponent {
 
     public static final int SELECTED_CENTER = 4;
     public static final int SELECTED_TOP = 0;
@@ -26,12 +27,13 @@ public abstract class BFVViewComponent {
     public static final int SELECTED_LEFT = 3;
 
 
-    private float lineWidth = 1.0f;
+    protected float lineWidth = 1.0f;
     private int lineColor = Color.WHITE;
     private int backColor = Color.BLACK;
+    protected float cornerRadius = 0.0f;
 
     public VarioSurfaceView view;
-    public RectF rect;
+    protected RectF rect;
 
     public boolean selected;
     public int selectionType = SELECTED_CENTER;
@@ -58,7 +60,11 @@ public abstract class BFVViewComponent {
         //selectedPaint.setAlpha(100);
     }
 
-    public abstract String getViewComponentType();
+    public int getParamatizedComponentType() {
+        return ParamatizedComponent.TYPE_VIEW_COMPONENT;
+    }
+
+    public abstract String getParamatizedComponentName();
 
 
     public void addToCanvas(Canvas canvas, Paint paint) {
@@ -66,12 +72,12 @@ public abstract class BFVViewComponent {
 
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(backColor);
-        canvas.drawRect(rect, paint);
+        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, paint);
 
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(lineColor);
         paint.setStrokeWidth(lineWidth);
-        canvas.drawRect(rect, paint);
+        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, paint);
 
         canvas.clipRect(rect.left, rect.top, rect.right, rect.bottom, Region.Op.REPLACE);
         canvas.translate(rect.left, rect.top);
@@ -230,6 +236,10 @@ public abstract class BFVViewComponent {
 
     }
 
+    public boolean contains(PointF point) {
+        return rect.contains(point.x, point.y);
+    }
+
     public int closest(Point2d point) {
         Line2d[] lines = new Line2d[4];
         lines[0] = new Line2d(new Point2d(rect.left, rect.top), new Point2d(rect.right, rect.top));
@@ -272,6 +282,7 @@ public abstract class BFVViewComponent {
         parameters.add(new ViewComponentParameter("bottom").setDecimalFormat("0.0").setDouble(rect.bottom));
         parameters.add(new ViewComponentParameter("left").setDecimalFormat("0.0").setDouble(rect.left));
         parameters.add(new ViewComponentParameter("lineWidth").setDecimalFormat("0.0").setDouble(lineWidth));
+        parameters.add(new ViewComponentParameter("cornerRadius").setDecimalFormat("0.0").setDouble(cornerRadius));
         parameters.add(new ViewComponentParameter("lineColor").setColor(lineColor));
         parameters.add(new ViewComponentParameter("backColor").setColor(backColor));
 
@@ -293,6 +304,10 @@ public abstract class BFVViewComponent {
         } else if (name.equals("lineWidth")) {
             lineWidth = (float) parameter.getDoubleValue();
             selectedPaint.setStrokeWidth(lineWidth);
+            dragingPaint.setStrokeWidth(lineWidth);
+        } else if (name.equals("cornerRadius")) {
+            cornerRadius = (float) parameter.getDoubleValue();
+
         } else if (name.equals("lineColor")) {
             lineColor = parameter.getColorValue();
         } else if (name.equals("backColor")) {

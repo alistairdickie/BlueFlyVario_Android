@@ -13,7 +13,6 @@ import android.view.Window;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import com.bfv.view.*;
-import com.bfv.view.component.BFVViewComponent;
 import com.bfv.view.component.FieldViewComponent;
 
 import java.util.ArrayList;
@@ -22,16 +21,16 @@ import java.util.ArrayList;
 /**
  * This Activity appears as a dialog.
  */
-public class ViewComponentListActivity extends Activity implements ColorPickerDialog.OnColorChangedListener {
+public class ParamatizedComponentListActivity extends Activity implements ColorPickerDialog.OnColorChangedListener {
     // Debugging
-    private static final String TAG = "ViewComponentListActvity";
+    private static final String TAG = "ParamatizedComponentListActvity";
     private static final boolean D = true;
 
 
     // Member fields
 
     private ArrayAdapter<String> viewComponentParameterArrayAdapter;
-    private BFVViewComponent selectedComponent;
+    private ParamatizedComponent selectedComponent;
 
     private String colorName;
 
@@ -103,19 +102,21 @@ public class ViewComponentListActivity extends Activity implements ColorPickerDi
 
         //Find the name
         TextView textView = (TextView) findViewById(R.id.title_view_component_list);
-        String type = selectedComponent.getViewComponentType();
+        String paramatizedComponentName = selectedComponent.getParamatizedComponentName();
+        int type = selectedComponent.getParamatizedComponentType();
 
-        if (type.equals("View Page")) {
+
+        if (type == ParamatizedComponent.TYPE_VIEW_PAGE) {
             delete.setVisibility(View.INVISIBLE);
             front.setVisibility(View.INVISIBLE);
             back.setVisibility(View.INVISIBLE);
 
         }
-        if (type.equals("Field")) {
-            type = type + ":" + ((FieldViewComponent) selectedComponent).getField().getFieldName();
+        if (paramatizedComponentName.equals("Field")) {
+            paramatizedComponentName = paramatizedComponentName + ":" + ((FieldViewComponent) selectedComponent).getField().getFieldName();
         }
 
-        textView.setText(type + " " + textView.getText());
+        textView.setText(paramatizedComponentName + " " + textView.getText());
 
 
         if (selectedComponent != null) {

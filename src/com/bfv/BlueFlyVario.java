@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,7 +21,9 @@ import android.widget.*;
 import com.bfv.audio.BeepThread;
 import com.bfv.model.Altitude;
 import com.bfv.model.Vario;
+import com.bfv.view.map.MapViewManager;
 import com.bfv.view.VarioSurfaceView;
+import com.google.android.maps.MapActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,11 +33,11 @@ import java.text.DecimalFormat;
 /**
  * This is the main Activity that displays the current chat session.
  */
-public class BlueFlyVario extends Activity {
+public class BlueFlyVario extends MapActivity {
 
     // Debugging
     private static final String TAG = "BFV";
-    private static final boolean D = true;
+    private static final boolean D = false;
 
     // Message types sent from the BFVService Handler
     public static final int MESSAGE_SERVICE_STATE_CHANGE = 1;
@@ -43,10 +46,12 @@ public class BlueFlyVario extends Activity {
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
     public static final int MESSAGE_GPS_STATE_CHANGE = 7;
+    public static final int MESSAGE_DRAW_MAP = 8;
 
     // Key names received from the BFVService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
+    public static final String DRAW_MAP = "draw_map";
 
 
     // Intent request codes
@@ -81,6 +86,9 @@ public class BlueFlyVario extends Activity {
     private ImageView flightStatus;
     private TextView viewPage;
 
+    private MapViewManager mapViewManager;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +105,7 @@ public class BlueFlyVario extends Activity {
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         this.setContentView(R.layout.main);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
+
 
         // Set up the custom title
         // Layout Views
@@ -120,7 +129,34 @@ public class BlueFlyVario extends Activity {
             return;
         }
 
+        setupAltitudes();
 
+        // Initialize the BFVService to perform bluetooth connections
+        varioService = new BFVService(this, mHandler);
+        varioService.addAltitude(alt);
+        varioService.setUpLocationManager();   //must call after the altitude has been added.
+
+
+        RelativeLayout layout = (RelativeLayout) this.findViewById(R.id.mainLayout);
+
+        //initialize the surface
+        varioSurface = new VarioSurfaceView(this, varioService);
+        varioSurface.setZOrderOnTop(true);
+        varioSurface.getHolder().setFormat(PixelFormat.TRANSPARENT);
+
+
+        //initialize the map
+
+        mapViewManager = new MapViewManager(this, varioSurface);
+
+        layout.addView(mapViewManager.getMap());
+        layout.addView(varioSurface);
+
+
+    }
+
+    public MapViewManager getMapViewManager() {
+        return mapViewManager;
     }
 
 
@@ -129,9 +165,6 @@ public class BlueFlyVario extends Activity {
         super.onStart();
         if (D) Log.e(TAG, "++ ON START ++");
 
-        if (varioService == null) {
-            setupVario();
-        }
 
         // If BT is not on, request that it be enabled.
 
@@ -212,23 +245,21 @@ public class BlueFlyVario extends Activity {
         }
     }
 
-    private void setupVario() {
-
-        setupAltitudes();
-
-        // Initialize the BFVService to perform bluetooth connections
-        varioService = new BFVService(this, mHandler);
-        varioService.addAltitude(alt);
-        varioService.setUpLocationManager();   //must call after the altitude has been added.
-
-
-        //initialize the surface
-        varioSurface = new VarioSurfaceView(this, varioService);
-        LinearLayout layout = (LinearLayout) this.findViewById(R.id.mainLayout);
-        layout.addView(varioSurface);
-
-
+    @Override
+    protected boolean isRouteDisplayed() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    protected boolean isLocationDisplayed() {
+        return super.isLocationDisplayed();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected int onGetMapDataSource() {
+        return super.onGetMapDataSource();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
 
     private void setupAltitudes() {
 
@@ -391,6 +422,14 @@ public class BlueFlyVario extends Activity {
                 case MESSAGE_TOAST:
                     Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
                             Toast.LENGTH_SHORT).show();
+                    break;
+
+                case MESSAGE_DRAW_MAP:
+                    boolean drawMap = msg.getData().getBoolean(DRAW_MAP);
+                    if (mapViewManager != null) {
+                        mapViewManager.setDrawMap(drawMap);
+                    }
+
                     break;
 
 
@@ -557,7 +596,7 @@ public class BlueFlyVario extends Activity {
                 return true;
             case R.id.layout:
                 if (varioSurface != null) {
-                    CharSequence[] items = new CharSequence[]{"Add View Component", "New Page", "Delete Page", "Page Properties", "Export Views", "Import Views", "Load Defaults"};
+                    CharSequence[] items = new CharSequence[]{"Add View Component", "Add Map Overlay", "Overlay Properties", "Page Properties", "New Page", "Delete Page", "Export Layout", "Import Layout", "Load Default Layout"};
 
                     final Context context = this;
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -566,22 +605,27 @@ public class BlueFlyVario extends Activity {
                         public void onClick(DialogInterface dialog, int item) {
 
                             if (item == 0) {
-                                varioSurface.addViewComponent(context);
-                            } else if (item == 1) {
-                                varioSurface.addView();
+                                varioSurface.chooseAddViewComponent(context);
+                            }
+                            if (item == 1) {
+                                varioSurface.chooseAddMapOverlay(context);
                             } else if (item == 2) {
-                                varioSurface.deleteView(context);
+                                varioSurface.overlayProperties(context);
                             } else if (item == 3) {
                                 varioSurface.viewPageProperties();
                             } else if (item == 4) {
-                                varioSurface.exportViews();
+                                varioSurface.addView();
                             } else if (item == 5) {
+                                varioSurface.deleteView(context);
+                            } else if (item == 6) {
+                                varioSurface.exportViews();
+                            } else if (item == 7) {
                                 FileChooserListActivity.title = "Layout File";
                                 FileChooserListActivity.fileExt = "xml";
                                 FileChooserListActivity.dir = context.getExternalFilesDir(null);
                                 Intent intent = new Intent(context, FileChooserListActivity.class);
                                 startActivityForResult(intent, REQUEST_FILE);
-                            } else if (item == 6) {
+                            } else if (item == 8) {
                                 varioSurface.setUpDefaultViews();
                             }
                         }
