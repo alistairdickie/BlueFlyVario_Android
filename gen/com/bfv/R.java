@@ -135,7 +135,7 @@ public final class R {
          */
         public static final int send = 0x7f070001;
         /**
-         * ViewComponentListActivity
+         * ParamatizedComponentListActivity
          */
         public static final int set_parameters = 0x7f07000e;
         public static final int settings = 0x7f070012;

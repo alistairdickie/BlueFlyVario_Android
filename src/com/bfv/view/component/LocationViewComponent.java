@@ -33,7 +33,7 @@ public class LocationViewComponent extends BFVViewComponent {
     }
 
     @Override
-    public String getViewComponentType() {
+    public String getParamatizedComponentName() {
         return "Location";
     }
 

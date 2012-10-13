@@ -4,9 +4,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.location.Location;
 import android.util.Log;
+import android.view.View;
 import com.bfv.BlueFlyVario;
+import com.bfv.model.LocationAltVar;
 import com.bfv.view.component.BFVViewComponent;
+import com.bfv.view.map.BFVMapOverlay;
 
 import java.util.ArrayList;
 
@@ -16,23 +20,27 @@ import java.util.ArrayList;
  * Date: 1/09/12
  * Time: 3:02 PM
  */
-public class BFVViewPage extends BFVViewComponent {  //extending BFVViewComponent is just a convenience so we can read parameters.
+public class BFVViewPage implements ParamatizedComponent {  //extending BFVViewComponent is just a convenience so we can read parameters.
 
 
     private ArrayList<BFVViewComponent> viewComponents;
+    private ArrayList<BFVMapOverlay> mapOverlays;
     private VarioSurfaceView surfaceView;
 
 
-    private int backColor = Color.BLACK;
+    private int backColor = Color.argb(0, 0, 0, 0);
     private RectF pageFrame;
     private int orientation;
+    private boolean drawMap;
+    private boolean autoPanMap;
 
 
     public BFVViewPage(RectF pageFrame, VarioSurfaceView surfaceView) {
-        super(new RectF(), surfaceView);
+        //super(new RectF(), surfaceView);
         this.surfaceView = surfaceView;
         this.pageFrame = pageFrame;
         viewComponents = new ArrayList<BFVViewComponent>();
+        mapOverlays = new ArrayList<BFVMapOverlay>();
         orientation = BlueFlyVario.blueFlyVario.getRequestedOrientation();
     }
 
@@ -44,6 +52,20 @@ public class BFVViewPage extends BFVViewComponent {  //extending BFVViewComponen
         viewComponents.add(0, viewComponent);
     }
 
+    public void addMapOverlay(BFVMapOverlay mapOverlay) {
+        mapOverlays.add(mapOverlay);
+
+    }
+
+    public void addMapOverlayBack(BFVMapOverlay mapOverlay) {
+        mapOverlays.add(0, mapOverlay);
+    }
+
+
+    public ArrayList<BFVMapOverlay> getMapOverlays() {
+        return mapOverlays;
+    }
+
     public void setPageFrame(RectF pageFrame) {
         this.pageFrame = pageFrame;
     }
@@ -52,14 +74,27 @@ public class BFVViewPage extends BFVViewComponent {  //extending BFVViewComponen
         return pageFrame;
     }
 
-    @Override
-    public String getViewComponentType() {
+    public boolean drawMap() {
+        return drawMap;
+    }
+
+    public boolean autoPanMap() {
+        return autoPanMap;
+    }
+
+
+    public String getParamatizedComponentName() {
         return "View Page";
+    }
+
+    public int getParamatizedComponentType() {
+        return ParamatizedComponent.TYPE_VIEW_PAGE;
     }
 
     public void addToCanvas(Canvas canvas, Paint paint) {
         canvas.drawColor(backColor);
-        int alpha = 200;
+
+
         BFVViewComponent draging = null;
         for (int i = 0; i < viewComponents.size(); i++) {
             BFVViewComponent viewComponent = viewComponents.get(i);
@@ -100,6 +135,8 @@ public class BFVViewPage extends BFVViewComponent {  //extending BFVViewComponen
         parameters.add(new ViewComponentParameter("frameWidth").setDecimalFormat("0").setDouble(pageFrame.width()));
         parameters.add(new ViewComponentParameter("frameHeight").setDecimalFormat("0").setDouble(pageFrame.height()));
         parameters.add(new ViewComponentParameter("orientation").setIntList(orientation, new String[]{"Landscape", "Portrait"}));
+        parameters.add(new ViewComponentParameter("drawMap").setBoolean(drawMap));
+        parameters.add(new ViewComponentParameter("autoPanMap").setBoolean(autoPanMap));
 
 
         return parameters;
@@ -119,6 +156,18 @@ public class BFVViewPage extends BFVViewComponent {  //extending BFVViewComponen
             //Log.i("BFV", "orient" + orientation);
             surfaceView.setCurrentViewPageOrientation(orientation, true);
             //Log.i("BFV", "orient2" + orientation);
+        } else if (name.equals("drawMap")) {
+            drawMap = parameter.getBooleanValue();
+            surfaceView.drawMap(drawMap());
+
+        } else if (name.equals("autoPanMap")) {
+            autoPanMap = parameter.getBooleanValue();
+            Location current = BlueFlyVario.blueFlyVario.getVarioService().getBfvLocationManager().getLocation();
+            if (current != null) {
+                surfaceView.updateLocation(new LocationAltVar(current, 0, 0, 0));
+            }
+
+
         }
 
 

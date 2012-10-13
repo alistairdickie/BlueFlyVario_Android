@@ -201,7 +201,12 @@ public class FieldManager {
                 }
                 break;
             case FIELD_LOCATION_ACCURACY:
-                value = bfvLocationManager.getLocation().getAccuracy();
+                if (bfvLocationManager.getLocation().hasAccuracy()) {
+                    value = bfvLocationManager.getLocation().getAccuracy();
+                } else {
+                    return "--";
+                }
+
                 break;
             case FIELD_LOCATION_ALTITUDE:
                 value = bfvLocationManager.getLocation().getAltitude();

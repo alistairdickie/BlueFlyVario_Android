@@ -5,17 +5,23 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.*;
+import android.os.Bundle;
+import android.os.Message;
 import android.text.InputFilter;
 import android.util.Log;
 import android.util.Xml;
 import android.view.*;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import com.bfv.*;
 import com.bfv.model.Altitude;
+import com.bfv.model.LocationAltVar;
 import com.bfv.model.Vario;
 import com.bfv.util.Point2d;
 import com.bfv.view.component.*;
+import com.bfv.view.map.BFVMapOverlay;
+import com.bfv.view.map.LocationRingOverlay;
+import com.bfv.view.map.MapViewManager;
+import com.bfv.view.map.WingOverlay;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -32,8 +38,9 @@ import java.util.ArrayList;
  */
 public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHolder.Callback, View.OnTouchListener, GestureDetector.OnGestureListener {
 
-    public static BFVViewComponent editingComponent;//todo - this is nasty, there must be a better way in android...
+    public static ParamatizedComponent editingComponent;//todo - this is nasty, there must be a better way in android...
     public static BFVViewPage editingViewPage;
+    public static VarioSurfaceView varioSurfaceView;
 
     public static final String defaultFileName = "myBlueFlyVarioViews.xml";
 
@@ -68,6 +75,7 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
     private BFVViewComponent selectedComponent;
     private PointF downPoint;
+    private boolean touchedMap;
 
     private boolean allowDragOnTouch = false;
 
@@ -88,10 +96,14 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
     public VarioSurfaceView(BlueFlyVario bfv, BFVService service) {
         super(bfv);
+        varioSurfaceView = this;
         this.bfv = bfv;
         this.service = service;
         firstRun = true;
         surfaceHolder = getHolder();
+
+        // this.setBackgroundColor(Color.argb(50,50,200,50));
+
 
         bfv.setRequestedOrientation(bfv.getResources().getConfiguration().orientation);//this makes sure it is set at least once to whatever we started with
 
@@ -261,6 +273,7 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
         viewPage3.addViewComponent(windTrace);
         viewPages.add(viewPage3);
 
+
         setViewPage(0);
         // this.onResumeVarioSurfaceView();
 
@@ -279,16 +292,16 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
     }
 
-    public void addViewComponent(Context context) {
+    public void chooseAddViewComponent(Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         final Context con = context;
-        final VarioSurfaceView view = this;
+
         builder.setTitle("Select Component Type");
 
-        builder.setItems(ViewComponentManager.viewComponentTypes, new DialogInterface.OnClickListener() {
+        builder.setItems(ParamatizedComponentManager.viewComponentTypes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
-                BFVViewComponent newComponent = null;
-                addDefaultViewComponent(ViewComponentManager.viewComponentTypes[item], con);
+
+                addDefaultViewComponent(ParamatizedComponentManager.viewComponentTypes[item], con);
 
 
             }
@@ -297,6 +310,51 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
         alert.show();
 
     }
+
+    public void chooseAddMapOverlay(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        builder.setTitle("Select Overlay Type");
+
+        ArrayList<String> remainingOverlayTypes = new ArrayList<String>();
+        for (int i = 0; i < ParamatizedComponentManager.mapOverlayTypes.length; i++) {
+            String overlayType = ParamatizedComponentManager.mapOverlayTypes[i];
+            ArrayList<BFVMapOverlay> mapOverlays = viewPages.get(currentView).getMapOverlays();
+            boolean add = true;
+            for (int j = 0; j < mapOverlays.size(); j++) {
+                String mapOverlayName = mapOverlays.get(j).getParamatizedComponentName();
+                if (mapOverlayName.equals(overlayType)) {
+                    add = false;
+                    break;
+                }
+
+
+            }
+            if (add) {
+                remainingOverlayTypes.add(overlayType);
+            }
+
+        }
+
+        final String[] types = new String[remainingOverlayTypes.size()];
+        for (int q = 0; q < types.length; q++) {
+            types[q] = remainingOverlayTypes.get(q);
+
+        }
+
+        builder.setItems(types, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+
+                addDefaultMapOverlay(types[item]);
+
+
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+    }
+
 
     public void addDefaultViewComponent(String name, Context context) {
         RectF rect = new RectF(10, 10, frame.width() - 10, frame.height() - 10);
@@ -342,10 +400,34 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
     }
 
+    public void addDefaultMapOverlay(String name) {
+
+        if (name.equals("Wing")) {
+            addMapOverlay(new WingOverlay(this));
+
+
+        } else if (name.equals("LocationRing")) {
+
+            addMapOverlay(new LocationRingOverlay(this));
+
+
+        }
+
+        switchOverlays();
+
+    }
+
     private void addViewComponent(BFVViewComponent newComponent) {
         viewPages.get(currentView).addViewComponent(newComponent);
         setEditingComponent(newComponent);
-        Intent parameterIntent = new Intent(bfv, ViewComponentListActivity.class);
+        Intent parameterIntent = new Intent(bfv, ParamatizedComponentListActivity.class);
+        bfv.startActivity(parameterIntent);
+    }
+
+    private void addMapOverlay(BFVMapOverlay mapOverlay) {
+        viewPages.get(currentView).addMapOverlay(mapOverlay);
+        setEditingComponent(mapOverlay);
+        Intent parameterIntent = new Intent(bfv, ParamatizedComponentListActivity.class);
         bfv.startActivity(parameterIntent);
     }
 
@@ -411,12 +493,14 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
                 setViewPage(newViewIndex);
                 newViewIndex = -1;
                 if (viewPages == null) {
+                    Log.i("BFV", "nullViewPages");
                     this.setUpDefaultViews();
 
                 }
 
 
             } catch (FileNotFoundException e) {
+                Log.i("BFV", "run" + e);
                 this.setUpDefaultViews();
             }
 
@@ -477,7 +561,8 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
                 }
 
-                c.drawColor(Color.BLACK); //background
+
+                c.drawColor(0, PorterDuff.Mode.CLEAR); //clear canvas with transparant background
 
                 if (viewPages.size() > 0 && currentView >= 0 && currentView < viewPages.size()) {
                     BFVViewPage viewPage = viewPages.get(currentView);
@@ -548,15 +633,42 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
     }
 
     public void setViewPage(int viewPage) {
+
+
         this.currentView = viewPage;
         if (viewPages != null) {
             int orientation = viewPages.get(viewPage).getOrientation();
             setCurrentViewPageOrientation(orientation, false);
+
+            boolean drawMap = viewPages.get(viewPage).drawMap();
+            drawMap(drawMap);
         }
 
+        switchOverlays();
 
         service.getmHandler().obtainMessage(BlueFlyVario.MESSAGE_VIEW_PAGE_CHANGE, currentView, -1).sendToTarget();
 
+    }
+
+    public void switchOverlays() {
+        MapViewManager mapViewManager = BlueFlyVario.blueFlyVario.getMapViewManager();
+        mapViewManager.clearOverlays();
+        ArrayList<BFVMapOverlay> mapOverlays = viewPages.get(currentView).getMapOverlays();
+
+        for (int i = 0; i < mapOverlays.size(); i++) {
+            BFVMapOverlay mapOverlay = mapOverlays.get(i);
+            mapViewManager.addOverlay(mapOverlay);
+        }
+
+
+    }
+
+    public void drawMap(boolean drawMap) {
+        Message msg = service.getHandler().obtainMessage(BlueFlyVario.MESSAGE_DRAW_MAP);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(BlueFlyVario.DRAW_MAP, drawMap);
+        msg.setData(bundle);
+        service.getHandler().sendMessage(msg);
     }
 
     public void setCurrentViewPageOrientation(int orientation, boolean maybeResize) {
@@ -582,6 +694,15 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
                 BlueFlyVario.blueFlyVario.setRequestedOrientation(orientation);
             }
 
+        }
+    }
+
+    public void updateLocation(LocationAltVar loc) {
+        if (viewPages == null) {
+            return;
+        }
+        if (viewPages.get(currentView).drawMap() && viewPages.get(currentView).autoPanMap()) {
+            BlueFlyVario.blueFlyVario.getMapViewManager().updateLocation(loc);
         }
     }
 
@@ -628,24 +749,61 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
     public boolean onTouch(View view, MotionEvent e) {
         // Log.i("BFV", "onTouch");
 
-        if (e.getAction() == MotionEvent.ACTION_UP && selectedComponent != null) {
+        //cancel selected component or map
+        if (e.getAction() == MotionEvent.ACTION_UP) {
+            if (selectedComponent != null) {
 
-            if (selectedComponent.isDraging()) {
-                viewPages.get(currentView).getViewComponents().remove(selectedComponent);
-                viewPages.get(currentView).getViewComponents().add(selectedComponent);
+
+                if (selectedComponent.isDraging()) {
+                    viewPages.get(currentView).getViewComponents().remove(selectedComponent);
+                    viewPages.get(currentView).getViewComponents().add(selectedComponent);
+
+                }
+                selectedComponent.setSelected(false, BFVViewComponent.SELECTED_CENTER);
+
+
+                selectedComponent = null;
+                downPoint = null;
+                allowDragOnTouch = false;
+            }
+            if (touchedMap) {
+                touchedMap = false;
+                downPoint = null;
 
             }
-            selectedComponent.setSelected(false, BFVViewComponent.SELECTED_CENTER);
-
-
-            selectedComponent = null;
-            downPoint = null;
-            allowDragOnTouch = false;
 
         }
+
+
+        //check if we are we touching the map
+        if (!touchedMap && e.getAction() == MotionEvent.ACTION_DOWN && viewPages.get(currentView).drawMap()) {   //only check if we have touched components if the map is drawn underneath
+            Log.i("BFV", "checkMapTouch");
+            ArrayList<BFVViewComponent> viewComponents = viewPages.get(currentView).getViewComponents();
+            PointF press = new PointF(e.getX(), e.getY());
+            boolean touchedComponent = false;
+            for (int i = 0; i < viewComponents.size(); i++) {
+                BFVViewComponent viewComponent = viewComponents.get(i);
+                if (viewComponent.contains(press)) {
+                    touchedComponent = true;
+                    break;
+                }
+            }
+            if (!touchedComponent) {
+                downPoint = press;
+                touchedMap = true;
+                Log.i("BFV", "touchedMap");
+            }
+
+        }
+        //process a touch for a selected component
         if (selectedComponent != null && allowDragOnTouch) {
             selectedComponent.processScroll(e.getX() - downPoint.x, e.getY() - downPoint.y, frame);
 
+
+        }
+        //process a touch for map related event
+        if (touchedMap) {
+            BlueFlyVario.blueFlyVario.getMapViewManager().processTouchEvent(downPoint, e);
         }
 
         return gestureDetector.onTouchEvent(e);
@@ -661,6 +819,7 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
     public void onShowPress(MotionEvent motionEvent) {
         // Log.i("BFV", "onShowPress" + motionEvent.getX());
+        //are we going to select a component
         if (layoutEnabled && layoutDragEnabled) {
 
             ArrayList<BFVViewComponent> viewComponents = viewPages.get(currentView).getViewComponents();
@@ -682,6 +841,7 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
                 closestComponent.setSelected(true, index);
                 selectedComponent = closestComponent;
                 downPoint = new PointF(motionEvent.getX(), motionEvent.getY());
+                return;
             }
         }
 
@@ -712,23 +872,22 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
             if (min < layoutParameterSelectRadius && closestComponent != null) {
                 setEditingComponent(closestComponent);
-                Intent parameterIntent = new Intent(bfv, ViewComponentListActivity.class);
+                Intent parameterIntent = new Intent(bfv, ParamatizedComponentListActivity.class);
                 bfv.startActivity(parameterIntent);
                 downPoint = null;
 
             }
         }
+
         return false;
     }
 
-    public void viewPageProperties() {
-        setEditingComponent(viewPages.get(currentView));
-        Intent parameterIntent = new Intent(bfv, ViewComponentListActivity.class);
-        bfv.startActivity(parameterIntent);
-    }
 
     public boolean onScroll(MotionEvent e, MotionEvent e1, float x, float y) {
-        //Log.i("BFV", "onScroll");
+//        //Log.i("BFV", "onScroll");
+//        if (touchedMap) {
+//            return BlueFlyVario.blueFlyVario.getMapViewManager().processScroll(x, y);
+//        }
 
         return false;
     }
@@ -757,13 +916,51 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
         return true;
     }
 
-    private void setEditingComponent(BFVViewComponent component) {
+    public void viewPageProperties() {
+        setEditingComponent(viewPages.get(currentView));
+        Intent parameterIntent = new Intent(bfv, ParamatizedComponentListActivity.class);
+        bfv.startActivity(parameterIntent);
+    }
+
+    public void overlayProperties(Context context) {
+
+        ArrayList<BFVMapOverlay> mapOverlays = viewPages.get(currentView).getMapOverlays();
+
+
+        final String[] names = new String[mapOverlays.size()];
+
+        for (int j = 0; j < mapOverlays.size(); j++) {
+            String mapOverlayName = mapOverlays.get(j).getParamatizedComponentName();
+            names[j] = mapOverlayName;
+
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+
+        builder.setTitle("Select Overlay");
+
+        builder.setItems(names, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                setEditingComponent(viewPages.get(currentView).getMapOverlays().get(item));
+                Intent parameterIntent = new Intent(bfv, ParamatizedComponentListActivity.class);
+                bfv.startActivity(parameterIntent);
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+    }
+
+    private void setEditingComponent(ParamatizedComponent component) {
         editingComponent = component;
         editingViewPage = viewPages.get(currentView);
     }
 
 
     public boolean saveViewsToXML(boolean internal, String name) {
+        if (viewPages == null) {
+            return false;
+        }
         XmlSerializer serializer = Xml.newSerializer();
 
 
@@ -772,8 +969,10 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
         try {
             if (internal) {
                 out = BlueFlyVario.blueFlyVario.openFileOutput(name, Context.MODE_PRIVATE);
+                //  Log.i("BFV", "internal");
             } else {
                 out = new FileOutputStream(new File(BlueFlyVario.blueFlyVario.getExternalFilesDir(null), name));
+                //  Log.i("BFV", "external");
             }
 
 
@@ -796,9 +995,22 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
                 ArrayList<BFVViewComponent> components = bfvViewPage.getViewComponents();
                 for (int j = 0; j < components.size(); j++) {
                     BFVViewComponent blueFlyViewComponent = components.get(j);
-                    String type = blueFlyViewComponent.getViewComponentType();
+                    String type = blueFlyViewComponent.getParamatizedComponentName();
                     serializer.startTag("", type);
                     ArrayList<ViewComponentParameter> parameters = blueFlyViewComponent.getParameters();
+                    for (int k = 0; k < parameters.size(); k++) {
+                        ViewComponentParameter parameter = parameters.get(k);
+                        serializer.attribute("", parameter.getName(), parameter.getXmlValue());
+
+                    }
+                    serializer.endTag("", type);
+                }
+                ArrayList<BFVMapOverlay> overlays = bfvViewPage.getMapOverlays();
+                for (int j = 0; j < overlays.size(); j++) {
+                    BFVMapOverlay mapOverlay = overlays.get(j);
+                    String type = mapOverlay.getParamatizedComponentName();
+                    serializer.startTag("", type);
+                    ArrayList<ViewComponentParameter> parameters = mapOverlay.getParameters();
                     for (int k = 0; k < parameters.size(); k++) {
                         ViewComponentParameter parameter = parameters.get(k);
                         serializer.attribute("", parameter.getName(), parameter.getXmlValue());
@@ -813,7 +1025,7 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
             serializer.flush();
             out.close();
         } catch (IOException e) {
-
+            Log.e("BFV", "saveViewsToXML" + e);
             return false;
         }
         return true;
@@ -908,7 +1120,7 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
     public ArrayList<BFVViewPage> readViewsFromXML(InputStream in) {
         loading = true;
-        //Log.i("BFV", "readViews");
+        // Log.i("BFV", "readViews" + in);
         XmlPullParser parser = null;
 
         ArrayList<BFVViewPage> viewPages = null;
@@ -931,14 +1143,14 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
             int eventType = parser.next();
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
-                //Log.i("BFV", "event" + eventType);
+                //   Log.i("BFV", "event" + eventType);
 
                 switch (eventType) {
                     case (XmlPullParser.START_DOCUMENT):
                         break;
                     case (XmlPullParser.START_TAG):
                         String tag = parser.getName();
-                        //Log.i("BFV", "tag" + tag);
+                        // Log.i("BFV", "tag" + tag);
                         if (tag.equals("BlueFlyVarioViewPages")) {
                             viewPages = new ArrayList<BFVViewPage>();
 
@@ -952,6 +1164,7 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
                         } else if (tag.equals("BFVViewPage")) {
                             currentViewPage = new BFVViewPage(new RectF(frame), this);
                             for (int i = 0; i < parser.getAttributeCount(); i++) {
+                                //           Log.i("BFV", "attribute" + parser.getAttributeName(i));
                                 currentViewPage.setParameterValue(new ViewComponentParameter(parser.getAttributeName(i), parser.getAttributeValue(i)));
                             }
                             viewPages.add(currentViewPage);
@@ -986,6 +1199,18 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
                                 component.setParameterValue(new ViewComponentParameter(parser.getAttributeName(i), parser.getAttributeValue(i)));
                             }
                             currentViewPage.addViewComponent(component);
+                        } else if (tag.equals("Wing")) {
+                            WingOverlay overlay = new WingOverlay(this);
+                            for (int i = 0; i < parser.getAttributeCount(); i++) {
+                                overlay.setParameterValue(new ViewComponentParameter(parser.getAttributeName(i), parser.getAttributeValue(i)));
+                            }
+                            currentViewPage.addMapOverlay(overlay);
+                        } else if (tag.equals("LocationRing")) {
+                            LocationRingOverlay overlay = new LocationRingOverlay(this);
+                            for (int i = 0; i < parser.getAttributeCount(); i++) {
+                                overlay.setParameterValue(new ViewComponentParameter(parser.getAttributeName(i), parser.getAttributeValue(i)));
+                            }
+                            currentViewPage.addMapOverlay(overlay);
                         } else {  //unknown tag - quit
                             return null;
                         }
@@ -993,7 +1218,7 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
                         break;
                     case (XmlPullParser.END_TAG):
-                        //Log.i("BFV", "end" + parser.getName());
+                        //     Log.i("BFV", "end" + parser.getName());
                         if (parser.getName().equals("BlueFlyVarioViewPages")) {
                             in.close();
                             if (newViewIndex == -1) {
@@ -1005,7 +1230,7 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
                         }
                         break;
                     case (XmlPullParser.TEXT):
-                        // Log.i("BFV", "text" + parser.getText());
+                        //       Log.i("BFV", "text" + parser.getText());
                         break;
 
                 }
@@ -1015,8 +1240,12 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
             }
 
-        } catch (Exception e) {
-            //Log.i("BFV", e.getMessage() + e.toString());
+        } catch (XmlPullParserException e) {
+            Log.i("BFV", e.getMessage() + e.toString());
+            loading = false;
+            return null;
+        } catch (IOException e) {
+            Log.i("BFV", e.getMessage() + e.toString());
             loading = false;
             return null;
         }
@@ -1032,7 +1261,14 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        editingViewPage.getViewComponents().remove(editingComponent);
+                        if (editingComponent instanceof BFVViewComponent) {
+                            editingViewPage.getViewComponents().remove(editingComponent);
+                        }
+                        if (editingComponent instanceof BFVMapOverlay) {
+                            editingViewPage.getMapOverlays().remove(editingComponent);
+                            varioSurfaceView.switchOverlays();
+                        }
+
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -1047,12 +1283,26 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
     }
 
     public static void moveEditingComponentFront() {
-        editingViewPage.getViewComponents().remove(editingComponent);
-        editingViewPage.addViewComponent(editingComponent);
+        if (editingComponent instanceof BFVViewComponent) {
+            editingViewPage.getViewComponents().remove(editingComponent);
+            editingViewPage.addViewComponent((BFVViewComponent) editingComponent);
+        }
+        if (editingComponent instanceof BFVMapOverlay) {
+            editingViewPage.getMapOverlays().remove(editingComponent);
+            editingViewPage.addMapOverlay((BFVMapOverlay) editingComponent);
+        }
+
     }
 
     public static void moveEditingComponentBack() {
-        editingViewPage.getViewComponents().remove(editingComponent);
-        editingViewPage.addViewComponentBack(editingComponent);
+        if (editingComponent instanceof BFVViewComponent) {
+            editingViewPage.getViewComponents().remove(editingComponent);
+            editingViewPage.addViewComponentBack((BFVViewComponent) editingComponent);
+        }
+        if (editingComponent instanceof BFVMapOverlay) {
+            editingViewPage.getMapOverlays().remove(editingComponent);
+            editingViewPage.addMapOverlayBack((BFVMapOverlay) editingComponent);
+        }
+
     }
 }

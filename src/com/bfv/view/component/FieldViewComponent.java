@@ -105,7 +105,7 @@ public class FieldViewComponent extends BFVViewComponent {
     }
 
     @Override
-    public String getViewComponentType() {
+    public String getParamatizedComponentName() {
         return "Field_" + field.getFieldName();
     }
 
