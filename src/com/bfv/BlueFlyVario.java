@@ -105,6 +105,7 @@ public class BlueFlyVario extends MapActivity {
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         this.setContentView(R.layout.main);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 
         // Set up the custom title

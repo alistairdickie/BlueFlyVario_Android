@@ -33,6 +33,8 @@ public class BFVViewPage implements ParamatizedComponent {  //extending BFVViewC
     private int orientation;
     private boolean drawMap;
     private boolean autoPanMap;
+    private boolean mapSatelliteMode;
+    private int mapZoomLevel;
 
 
     public BFVViewPage(RectF pageFrame, VarioSurfaceView surfaceView) {
@@ -82,6 +84,18 @@ public class BFVViewPage implements ParamatizedComponent {  //extending BFVViewC
         return autoPanMap;
     }
 
+    public boolean isMapSatelliteMode() {
+        return mapSatelliteMode;
+    }
+
+    public int getMapZoomLevel() {
+        return mapZoomLevel;
+    }
+
+    public void setZoomLevel(int zoomLevel) {
+        this.mapZoomLevel = zoomLevel;
+
+    }
 
     public String getParamatizedComponentName() {
         return "View Page";
@@ -137,6 +151,8 @@ public class BFVViewPage implements ParamatizedComponent {  //extending BFVViewC
         parameters.add(new ViewComponentParameter("orientation").setIntList(orientation, new String[]{"Landscape", "Portrait"}));
         parameters.add(new ViewComponentParameter("drawMap").setBoolean(drawMap));
         parameters.add(new ViewComponentParameter("autoPanMap").setBoolean(autoPanMap));
+        parameters.add(new ViewComponentParameter("mapSatelliteMode").setBoolean(mapSatelliteMode));
+        parameters.add(new ViewComponentParameter("mapZoomLevel").setInt(mapZoomLevel));
 
 
         return parameters;
@@ -167,6 +183,20 @@ public class BFVViewPage implements ParamatizedComponent {  //extending BFVViewC
                 surfaceView.updateLocation(new LocationAltVar(current, 0, 0, 0));
             }
 
+
+        } else if (name.equals("mapSatelliteMode")) {
+            mapSatelliteMode = parameter.getBooleanValue();
+            surfaceView.setDrawSatellite(mapSatelliteMode);
+
+        } else if (name.equals("mapZoomLevel")) {
+            mapZoomLevel = parameter.getIntValue();
+            if (mapZoomLevel < 1) {
+                mapZoomLevel = 1;
+            }
+            if (mapZoomLevel > BlueFlyVario.blueFlyVario.getMapViewManager().getMap().getMaxZoomLevel()) {
+                mapZoomLevel = BlueFlyVario.blueFlyVario.getMapViewManager().getMap().getMaxZoomLevel();
+            }
+            surfaceView.setMapZoom(mapZoomLevel);
 
         }
 

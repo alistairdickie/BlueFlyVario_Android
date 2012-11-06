@@ -1,6 +1,7 @@
 package com.bfv.view.map;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.location.Location;
 import android.view.MotionEvent;
@@ -23,19 +24,25 @@ public class MapViewManager {
     private MapView map;
     private MapController controller;
 
-    private RelativeLayout.LayoutParams mapParams;
+    //    private RelativeLayout.LayoutParams mapParams;
     private VarioSurfaceView surfaceView;
     private boolean drawMap;
 
 
-    private PointF mid = new PointF();
-    private double pointerDistStart;
-    private boolean zoom;
+//    private PointF mid = new PointF();
+//    private double pointerDistStart;
+//    private boolean zoom;
 
 
     public MapViewManager(Context context, VarioSurfaceView surfaceView) {
         this.surfaceView = surfaceView;
-        map = new MapView(context, "0WwWrZfN5JFa7_0zOmkxfibitu3dKvv6I6bhqUw");    //todo - will need to fix this to be other than the debug key
+        map = new MapView(context, "0WwWrZfN5JFa7_0zOmkxfibitu3dKvv6I6bhqUw") {
+            public void dispatchDraw(Canvas canvas) {
+                super.dispatchDraw(canvas);
+                processZoom(map.getZoomLevel());
+
+            }
+        };    //todo - will need to fix this to be other than the debug key
         //map.setBuiltInZoomControls(true);
         //       map.getController().animateTo(new GeoPoint(0,0));
         //       map.getController().setZoom(18);
@@ -43,6 +50,7 @@ public class MapViewManager {
         map.setClickable(true);
         map.setEnabled(true);
         map.setVisibility(View.VISIBLE);
+
 
         controller = map.getController();
 
@@ -70,11 +78,24 @@ public class MapViewManager {
         }
     }
 
+    public void setDrawSatellite(boolean drawSatellite) {
+        map.setSatellite(drawSatellite);
+    }
+
+    public void setZoomLevel(int zoomLevel) {
+        controller.setZoom(zoomLevel);
+    }
+
     public void updateLocation(LocationAltVar loc) {
         Location location = loc.getLocation();
         int latE6 = (int) (location.getLatitude() * 1e6);
         int longE6 = (int) (location.getLongitude() * 1e6);
         controller.animateTo(new GeoPoint(latE6, longE6));
+
+    }
+
+    public void processZoom(int zoom) {
+        surfaceView.processMapZoom(zoom);
 
     }
 
