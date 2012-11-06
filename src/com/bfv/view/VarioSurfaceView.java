@@ -642,11 +642,30 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
             boolean drawMap = viewPages.get(viewPage).drawMap();
             drawMap(drawMap);
+
+            boolean drawSatellite = viewPages.get(viewPage).isMapSatelliteMode();
+            setDrawSatellite(drawSatellite);
+
+            setMapZoom(viewPages.get(viewPage).getMapZoomLevel());
+
+
         }
 
         switchOverlays();
 
         service.getmHandler().obtainMessage(BlueFlyVario.MESSAGE_VIEW_PAGE_CHANGE, currentView, -1).sendToTarget();
+
+    }
+
+    public void setMapZoom(int zoomLevel) {
+        MapViewManager mapViewManager = BlueFlyVario.blueFlyVario.getMapViewManager();
+        mapViewManager.setZoomLevel(zoomLevel);
+    }
+
+    public void processMapZoom(int zoomLevel) {
+        if (viewPages != null && viewPages.get(currentView) != null) {
+            viewPages.get(currentView).setZoomLevel(zoomLevel);
+        }
 
     }
 
@@ -669,6 +688,11 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
         bundle.putBoolean(BlueFlyVario.DRAW_MAP, drawMap);
         msg.setData(bundle);
         service.getHandler().sendMessage(msg);
+    }
+
+    public void setDrawSatellite(boolean drawSatellite) {
+        MapViewManager mapViewManager = BlueFlyVario.blueFlyVario.getMapViewManager();
+        mapViewManager.setDrawSatellite(drawSatellite);
     }
 
     public void setCurrentViewPageOrientation(int orientation, boolean maybeResize) {
