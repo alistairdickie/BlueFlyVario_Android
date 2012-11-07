@@ -3,6 +3,8 @@ package com.bfv.model;
 import android.location.Location;
 import android.util.Log;
 
+import java.text.DecimalFormat;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Alistair
@@ -25,6 +27,8 @@ public class LocationAltVar {
     public float driftedX;
     public float driftedY;
     private long creationTime;
+    private DecimalFormat latLongFormat = new DecimalFormat("0.000000");
+    private DecimalFormat df3 = new DecimalFormat("0.000");
 
     public LocationAltVar() {
         baroAlt = -1000;
@@ -78,16 +82,16 @@ public class LocationAltVar {
 
 
     public String getCSVString() {
-        return location.getLatitude()
-                + "," + location.getLongitude()
+        return latLongFormat.format(location.getLatitude())
+                + "," + latLongFormat.format(location.getLongitude())
                 + "," + location.getTime()
                 + "," + location.getAccuracy()
                 + "," + location.getBearing()
-                + "," + location.getSpeed()
-                + "," + location.getAltitude()
-                + "," + this.getBaroAlt()
-                + "," + this.getVario()
-                + "," + this.getVario2();
+                + "," + df3.format(location.getSpeed())
+                + "," + df3.format(location.getAltitude())
+                + "," + df3.format(this.getBaroAlt())
+                + "," + df3.format(this.getVario())
+                + "," + df3.format(this.getVario2());
 
 
     }
