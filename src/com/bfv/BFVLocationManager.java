@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.bfv.model.Altitude;
 import com.bfv.model.LocationAltVar;
 import com.bfv.model.Vario;
+import com.bfv.model.WindCalculator;
 import com.bfv.util.ArrayUtil;
 import com.bfv.util.FitCircle;
 import com.bfv.view.VarioSurfaceView;
@@ -69,11 +70,14 @@ public class BFVLocationManager implements LocationListener {
     private Handler mHandler;
 
     private double[][] headingArray;
+    private double[] heading;
 
     private double[] wind;
     private double[] windError;
 
     private boolean hasWind = false;
+
+    private WindCalculator windCalculator;
 
     public BFVLocationManager(Context context, BFVService bfvService, Handler mHandler) {
         this.context = context;
@@ -96,6 +100,7 @@ public class BFVLocationManager implements LocationListener {
         int bufferRate = Integer.valueOf(sharedPrefs.getString("display_varioBufferRate", "3"));
 
         setTimeCut(bufferSize / 50.0 * bufferRate);     //todo different setting
+        windCalculator = new WindCalculator(16, 0.3, 300);     //todo settings
 
 
         location = new Location("");
@@ -134,6 +139,10 @@ public class BFVLocationManager implements LocationListener {
 
     public Location getLocation() {
         return location;
+    }
+
+    public double[] getHeading() {
+        return new double[]{Math.sin(Math.toRadians(location.getBearing())) * location.getSpeed(), Math.cos(Math.toRadians(location.getBearing())) * location.getSpeed()};
     }
 
     public void maybeAskEnableGPS() {
@@ -311,29 +320,43 @@ public class BFVLocationManager implements LocationListener {
         tempMaxVario.setMaxVar(true);
 
 
-        //wind calculation
-        int windSize = 90;//todo setting
-        int index = 0;
+        //old wind calculation
+//        int windSize = 90;//todo setting
+//        int index = 0;
+//
+//        if (locations.size() > windSize) {
+//            hasWind = true;
+//            headingArray = new double[windSize][2];
+//
+//            for (int i = locations.size() - 1; i >= 0; i--) {
+//                if (index >= windSize) {
+//                    break;
+//                }
+//                LocationAltVar locationAltVar = locations.get(i);
+//
+//
+//                headingArray[index][0] = Math.sin(Math.toRadians(locationAltVar.getLocation().getBearing())) * locationAltVar.getLocation().getSpeed();
+//                headingArray[index][1] = Math.cos(Math.toRadians(locationAltVar.getLocation().getBearing())) * locationAltVar.getLocation().getSpeed();
+//                index++;
+//            }
+//            wind = FitCircle.taubinNewton(headingArray);
+//            windError = FitCircle.getErrors(headingArray, wind);
+//            locations.get(locations.size() - 1).setWind(wind);//reset the wind on the most recent one.
+//        }
 
-        if (locations.size() > windSize) {
-            hasWind = true;
-            headingArray = new double[windSize][2];
+        //new wind calculation
+        windCalculator.addSpeedVector(location.getBearing(), location.getSpeed(), location.getTime() / 1000.0);
 
-            for (int i = locations.size() - 1; i >= 0; i--) {
-                if (index >= windSize) {
-                    break;
-                }
-                LocationAltVar locationAltVar = locations.get(i);
-
-
-                headingArray[index][0] = Math.sin(Math.toRadians(locationAltVar.getLocation().getBearing())) * locationAltVar.getLocation().getSpeed();
-                headingArray[index][1] = Math.cos(Math.toRadians(locationAltVar.getLocation().getBearing())) * locationAltVar.getLocation().getSpeed();
-                index++;
-            }
+        headingArray = windCalculator.getPoints();
+        if (headingArray.length > 2) {
             wind = FitCircle.taubinNewton(headingArray);
             windError = FitCircle.getErrors(headingArray, wind);
             locations.get(locations.size() - 1).setWind(wind);//reset the wind on the most recent one.
+            hasWind = true;
+        } else {
+            hasWind = false;
         }
+
 
         //maxDriftDistance
         maxDriftedDistance = 0.0;
