@@ -87,6 +87,7 @@ public class BlueFlyVario extends MapActivity {
     private TextView viewPage;
 
     private MapViewManager mapViewManager;
+    public boolean doubleBackToExitPressedOnce;
 
 
     @Override
@@ -204,6 +205,7 @@ public class BlueFlyVario extends MapActivity {
         if (varioSurface != null) {
             varioSurface.onResumeVarioSurfaceView();
         }
+        this.doubleBackToExitPressedOnce = false;
 
     }
 
@@ -244,6 +246,16 @@ public class BlueFlyVario extends MapActivity {
             varioSurface.onDestroy();
             varioSurface = null;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, R.string.exit_press_back_twice_message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -410,6 +422,7 @@ public class BlueFlyVario extends MapActivity {
                 case MESSAGE_VIEW_PAGE_CHANGE:
                     if (D) Log.i(TAG, "MESSAGE_VIEW_PAGE_CHANGE: " + msg.arg1);
                     viewPage.setText("" + msg.arg1);
+                    doubleBackToExitPressedOnce = false;
                     break;
 
 
@@ -508,6 +521,7 @@ public class BlueFlyVario extends MapActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        this.doubleBackToExitPressedOnce = false;
         MenuItem scan = menu.findItem(R.id.scan);
         if (varioService.getState() == BFVService.STATE_CONNECTED || varioService.getState() == BFVService.STATE_CONNECTEDANDPRESSURE || varioService.getState() == BFVService.STATE_CONNECTING) {
             scan.setTitle(R.string.disconnect);
@@ -557,7 +571,8 @@ public class BlueFlyVario extends MapActivity {
                 if (varioService != null) {
                     Flight flight = varioService.getFlight();
                     if (flight == null) {
-                        CharSequence[] items = {"Start", "Sim Example", "Cancel"};
+                        //  CharSequence[] items = {"Start", "Sim Example", "Cancel"};
+                        CharSequence[] items = {"Start", "Cancel"};
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setTitle("Flight Control");
                         builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -565,9 +580,9 @@ public class BlueFlyVario extends MapActivity {
                                 if (item == 0) {
                                     varioService.startFlight();
                                 }
-                                if (item == 1) {
-                                    varioService.getBfvLocationManager().startSimulation();
-                                }
+//                                if (item == 1) {
+//                                    varioService.getBfvLocationManager().startSimulation();
+//                                }
 
                             }
                         });

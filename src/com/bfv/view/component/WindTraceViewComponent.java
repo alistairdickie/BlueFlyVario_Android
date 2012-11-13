@@ -79,13 +79,17 @@ public class WindTraceViewComponent extends BFVViewComponent {
 
 
         paint.setColor(Color.WHITE);
-        for (int i = 1; i < headingArray.length; i++) {
-            canvas.drawCircle((float) (headingArray[i][0] * scale), (float) (headingArray[i][1] * scale), 2, paint);
+        paint.setStyle(Paint.Style.STROKE);
+
+        for (int i = 0; i < headingArray.length; i++) {
+            canvas.drawCircle((float) (headingArray[i][0] * scale), (float) (headingArray[i][1] * scale), 5, paint);
 
         }
 
+        double[] heading = bfvLocationManager.getHeading();
         paint.setColor(Color.MAGENTA);
-        canvas.drawCircle((float) (headingArray[0][0] * scale), (float) (headingArray[0][1] * scale), 3, paint);
+        paint.setStyle(Paint.Style.FILL);
+        canvas.drawCircle((float) (heading[0] * scale), (float) (heading[1] * scale), 5, paint);
 
 
         double[] wind = bfvLocationManager.getWind();
@@ -98,6 +102,7 @@ public class WindTraceViewComponent extends BFVViewComponent {
 
         paint.setStrokeWidth(5.0f);
         paint.setColor(Color.GREEN);
+        paint.setStyle(Paint.Style.STROKE);
         canvas.drawCircle((float) x, (float) y, (float) errors[2], paint);
         canvas.drawLine(0, 0, (float) x, (float) y, paint);
 

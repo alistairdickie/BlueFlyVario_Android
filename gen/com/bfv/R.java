@@ -105,8 +105,9 @@ public final class R {
 
     public static final class raw {
         public static final int default_layout = 0x7f050000;
-        public static final int flight_sim_test = 0x7f050001;
-        public static final int tone_1000mhz = 0x7f050002;
+        public static final int default_layout_old = 0x7f050001;
+        public static final int flight_sim_test = 0x7f050002;
+        public static final int tone_1000mhz = 0x7f050003;
     }
 
     public static final class string {
@@ -118,6 +119,7 @@ public final class R {
          */
         public static final int connect = 0x7f070010;
         public static final int disconnect = 0x7f070011;
+        public static final int exit_press_back_twice_message = 0x7f070013;
         /**
          * FileChooserListActivity
          */

@@ -772,7 +772,7 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
     public boolean onTouch(View view, MotionEvent e) {
         // Log.i("BFV", "onTouch");
-
+        bfv.doubleBackToExitPressedOnce = false;
         //cancel selected component or map
         if (e.getAction() == MotionEvent.ACTION_UP) {
             if (selectedComponent != null) {

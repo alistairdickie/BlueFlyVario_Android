@@ -46,4 +46,5 @@
     <string name="connect">Connect a device</string>
     <string name="disconnect">Disconnect device</string>
     <string name="settings">Settings</string>
+    <string name="exit_press_back_twice_message">Press back once more to exit</string>
 </resources>

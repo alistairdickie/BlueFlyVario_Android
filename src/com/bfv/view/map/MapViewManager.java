@@ -36,7 +36,8 @@ public class MapViewManager {
 
     public MapViewManager(Context context, VarioSurfaceView surfaceView) {
         this.surfaceView = surfaceView;
-        map = new MapView(context, "0WwWrZfN5JFa7_0zOmkxfibitu3dKvv6I6bhqUw") {
+//        map = new MapView(context, "0WwWrZfN5JFYpfjMfI76HF0x3d7dpqP8ABNpxFA") {  //debug
+        map = new MapView(context, "0WwWrZfN5JFZ7-lAkVT6ld4jENc-EE4TQ0c4ZNw") {  //release
             public void dispatchDraw(Canvas canvas) {
                 super.dispatchDraw(canvas);
                 processZoom(map.getZoomLevel());
