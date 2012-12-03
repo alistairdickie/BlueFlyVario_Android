@@ -100,6 +100,26 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
         boolean audio_enabled = sharedPrefs.getBoolean("audio_enabled", false);
         BlueFlyVario.blueFlyVario.setBeeps(audio_enabled);
 
+
+        int audio_basehz = Integer.valueOf(sharedPrefs.getString("audio_basehz", "700"));
+        BlueFlyVario.blueFlyVario.getBeeps().setBase(audio_basehz);
+
+
+        int audio_incrementhz = Integer.valueOf(sharedPrefs.getString("audio_incrementhz", "100"));
+        BlueFlyVario.blueFlyVario.getBeeps().setIncrement(audio_incrementhz);
+
+
+        double vario_audio_threshold = Double.valueOf(sharedPrefs.getString("vario_audio_threshold", "0.2"));
+        BlueFlyVario.blueFlyVario.getBeeps().setVarioAudioThreshold(vario_audio_threshold);
+
+        double vario_audio_cutoff = Double.valueOf(sharedPrefs.getString("vario_audio_cutoff", "0.05"));
+        BlueFlyVario.blueFlyVario.getBeeps().setVarioAudioCutoff(vario_audio_cutoff);
+
+
+        double sink_audio_threshold = Double.valueOf(sharedPrefs.getString("sink_audio_threshold", "-2.0"));
+        BlueFlyVario.blueFlyVario.getBeeps().setSinkAudioThreshold(sink_audio_threshold);
+
+
         bfv.getVarioSurface().scheduleSetUpData();
         bfv.getVarioSurface().readSettings();
         // stopCommitsInListener = false;
@@ -284,6 +304,21 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
             BlueFlyVario.blueFlyVario.getBeeps().setIncrement(audio_incrementhz);
 
         }
+
+        if (key.equals("vario_audio_threshold")) {
+            double vario_audio_threshold = Double.valueOf(sharedPreferences.getString("vario_audio_threshold", "0.2"));
+            BlueFlyVario.blueFlyVario.getBeeps().setVarioAudioThreshold(vario_audio_threshold);
+        }
+        if (key.equals("vario_audio_cutoff")) {
+            double vario_audio_cutoff = Double.valueOf(sharedPreferences.getString("vario_audio_cutoff", "0.05"));
+            BlueFlyVario.blueFlyVario.getBeeps().setVarioAudioCutoff(vario_audio_cutoff);
+
+        }
+        if (key.equals("sink_audio_threshold")) {
+            double sink_audio_threshold = Double.valueOf(sharedPreferences.getString("sink_audio_threshold", "-2.0"));
+            BlueFlyVario.blueFlyVario.getBeeps().setSinkAudioThreshold(sink_audio_threshold);
+        }
+
         if (key.equals("audio_enabled")) {
             boolean audio_enabled = sharedPreferences.getBoolean("audio_enabled", true);
 
