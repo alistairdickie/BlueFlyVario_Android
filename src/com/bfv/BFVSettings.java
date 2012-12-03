@@ -228,7 +228,7 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
             boolean alt_setgps = sharedPreferences.getBoolean("alt_setgps", false);
             //Log.e("BFV", "setgps" + alt_setgps);
             if (alt_setgps) {
-                if (varioService.getState() == BFVService.STATE_CONNECTEDANDPRESSURE) {
+                if (varioService != null && varioService.getState() == BFVService.STATE_CONNECTEDANDPRESSURE) {
                     if (varioService.getBfvLocationManager() != null) {
                         varioService.getBfvLocationManager().setGpsAltUpdateFlag(true);
                     }
@@ -237,7 +237,7 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
                     BlueFlyVario.blueFlyVario.setSetAltFlag(true);
                 }
             } else {
-                if (varioService.getState() == BFVService.STATE_CONNECTEDANDPRESSURE) {
+                if (varioService != null && varioService.getState() == BFVService.STATE_CONNECTEDANDPRESSURE) {
                     if (varioService.getBfvLocationManager() != null) {
                         varioService.getBfvLocationManager().setGpsAltUpdateFlag(false);
                     }

@@ -120,9 +120,11 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
 
         vario.removeChangeListener(this);
 
+
         soundPool.stop(tone_1000_stream);
         soundPool.stop(sink_stream);
         soundPool.release();
+
 
         soundPool = null;
 

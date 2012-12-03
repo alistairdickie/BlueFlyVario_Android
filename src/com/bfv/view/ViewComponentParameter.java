@@ -4,6 +4,8 @@ import android.graphics.Color;
 import android.util.Log;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -133,7 +135,14 @@ public class ViewComponentParameter {
     }
 
     public double getDoubleValue() {
-        return Double.parseDouble(value);
+        NumberFormat nf = NumberFormat.getInstance();
+
+        try {
+            return nf.parse(value).doubleValue(); //try to parse the commas in european locales...
+        } catch (ParseException e) {
+            return Double.parseDouble(value); //fall back to a simple parse..
+        }
+
     }
 
     public boolean getBooleanValue() {
