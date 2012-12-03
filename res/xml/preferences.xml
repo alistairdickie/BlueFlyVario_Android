@@ -271,6 +271,33 @@
                         android:defaultValue="100"
                         android:numeric="integer"
                         />
+                <EditTextPreference
+                        android:key="vario_audio_threshold"
+                        android:title="Vario Audio Threshold"
+                        android:summary="The value above which the audio begins beeping"
+                        android:dialogTitle="Vario Audio Threshold"
+                        android:dialogMessage="Above this value in m/s the vario will begin beeping"
+                        android:defaultValue="0.2"
+                        android:numeric="decimal"
+                        />
+                <EditTextPreference
+                        android:key="vario_audio_cutoff"
+                        android:title="Vario Audio Cutoff"
+                        android:summary="The value which stops the variou beeping"
+                        android:dialogTitle="Vario Audio Cutoff"
+                        android:dialogMessage="If the vario is beeping it will stop below this value. Should be lower than Vario Audio Threshold."
+                        android:defaultValue="0.05"
+                        android:numeric="decimal"
+                        />
+                <EditTextPreference
+                        android:key="sink_audio_threshold"
+                        android:title="Sink Audio Threshold"
+                        android:summary="The value below which the sink tone plays"
+                        android:dialogTitle="Sink Audio Threshold"
+                        android:dialogMessage="Below this value in m/s the sink tone will play"
+                        android:defaultValue="-2.0"
+                        android:numeric="decimal"
+                        />
 
             </PreferenceScreen>
 

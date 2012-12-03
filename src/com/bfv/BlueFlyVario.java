@@ -685,10 +685,10 @@ public class BlueFlyVario extends MapActivity {
     public void setBeeps(boolean enableBeeping) {
         if (enableBeeping) {
             if (beeps == null) {
-                beeps = new BeepThread(this, vario, 0.2);
+                beeps = new BeepThread(this, vario);
             } else {
                 beeps.setRunning(false);
-                beeps = new BeepThread(this, vario, 0.2);
+                beeps = new BeepThread(this, vario);
             }
 
             beepStatus.setImageResource(R.drawable.ic_audio_blue);
