@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.util.Log;
 import com.bfv.BFVSettings;
 import com.bfv.R;
 import com.bfv.VarioChangeListener;
@@ -31,6 +32,9 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
     private double cadence = 0.5;
 
     private SoundPool soundPool;
+
+    private int numSounds = 2;
+    private int soundsLoaded = 0;
 
     private int tone_1000;
     private int sink;
@@ -66,7 +70,7 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
         cadenceFunction.addNewPoint(new Point2d(3.571, 0.0741));
 
         running = true;
-        soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
+        soundPool = new SoundPool(numSounds, AudioManager.STREAM_MUSIC, 0);
         soundPool.setOnLoadCompleteListener(this);
         tone_1000 = soundPool.load(context, R.raw.tone_1000mhz, 1);
         sink = soundPool.load(context, R.raw.sink, 1);
@@ -120,11 +124,9 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
 
         vario.removeChangeListener(this);
 
-
         soundPool.stop(tone_1000_stream);
         soundPool.stop(sink_stream);
         soundPool.release();
-
 
         soundPool = null;
 
@@ -178,10 +180,14 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
     }
 
     public void onLoadComplete(SoundPool soundPool, int i, int i1) {
-        vario.addChangeListener(this);
-        thread = new Thread(this);
+        soundsLoaded++;
+        if (soundsLoaded == numSounds) {
 
-        thread.start();
+            vario.addChangeListener(this);
+            thread = new Thread(this);
+            thread.start();
+        }
+
 
     }
 
@@ -195,6 +201,7 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
     }
 
     public void onDestroy() {
+
         this.setRunning(false);
         thread = null;
 
