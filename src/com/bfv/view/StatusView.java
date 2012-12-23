@@ -1,14 +1,26 @@
+/*
+ BlueFlyVario flight instrument - http://www.alistairdickie.com/blueflyvario/
+ Copyright (C) 2011-2012 Alistair Dickie
+
+ BlueFlyVario is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ BlueFlyVario is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with BlueFlyVario.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.bfv.view;
 
 import com.bfv.BFVService;
 import com.bfv.BFVLocationManager;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Alistair
- * Date: 27/08/12
- * Time: 8:24 PM
- */
 public class StatusView {
 
     private BFVService service;
