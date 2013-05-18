@@ -38,12 +38,16 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
     private double varioAudioThreshold;
     private double varioAudioCutoff;
     private double sinkAudioThreshold;
+    private double sinkAudioCutoff;
 
-    private double base = 700.0;
+
+    private double base = 1000.0;
     private double increment = 100.0;
 
+    private double sinkBase = 500.0;
+    private double sinkIncrement = 100.0;
+
     private double var;
-    private double cadence = 0.5;
 
     private SoundPool soundPool;
 
@@ -56,11 +60,17 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
     private int tone_1000_stream;
     private int sink_stream;
 
-    private boolean beeping;
 
     private Thread thread;
 
     private PiecewiseLinearFunction cadenceFunction;
+
+    private boolean beepOn;
+    private boolean sinkOn;
+    private boolean silentPause;
+
+    private boolean sinking;
+    private boolean beeping;
 
 
     public BeepThread(Context context, KalmanFilteredVario vario) {
@@ -68,11 +78,14 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
         this.vario = vario;
 
         SharedPreferences sharedPrefs = BFVSettings.sharedPrefs;
-        base = Integer.valueOf(sharedPrefs.getString("audio_basehz", "700"));
+        base = Integer.valueOf(sharedPrefs.getString("audio_basehz", "1000"));
         increment = Integer.valueOf(sharedPrefs.getString("audio_incrementhz", "100"));
         varioAudioCutoff = Double.valueOf(sharedPrefs.getString("vario_audio_cutoff", "0.05"));
         varioAudioThreshold = Double.valueOf(sharedPrefs.getString("vario_audio_threshold", "0.2"));
         sinkAudioThreshold = Double.valueOf(sharedPrefs.getString("sink_audio_threshold", "-2.0"));
+        sinkAudioCutoff = Double.valueOf(sharedPrefs.getString("sink_audio_cutoff", "-1.5"));
+        sinkBase = Integer.valueOf(sharedPrefs.getString("sink_audio_basehz", "500"));
+        sinkIncrement = Integer.valueOf(sharedPrefs.getString("sink_audio_incrementhz", "100"));
 
 
         cadenceFunction = new PiecewiseLinearFunction(new Point2d(0, 0.4763));
@@ -87,7 +100,7 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
         soundPool = new SoundPool(numSounds, AudioManager.STREAM_MUSIC, 0);
         soundPool.setOnLoadCompleteListener(this);
         tone_1000 = soundPool.load(context, R.raw.tone_1000mhz, 1);
-        sink = soundPool.load(context, R.raw.sink, 1);
+        sink = soundPool.load(context, R.raw.sink_tone500mhz, 1);
 
 
     }
@@ -104,36 +117,64 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
         this.sinkAudioThreshold = sinkAudioThreshold;
     }
 
+    public void setSinkAudioCutoff(double sinkAudioCutoff) {
+        this.sinkAudioCutoff = sinkAudioCutoff;
+    }
+
+    public void setSinkBase(double sinkBase) {
+        this.sinkBase = sinkBase;
+    }
+
+    public void setSinkIncrement(double sinkIncrement) {
+        this.sinkIncrement = sinkIncrement;
+    }
+
     public void run() {
-        tone_1000_stream = soundPool.play(tone_1000, 1.0f, 1.0f, 0, -1, 0.7f);//need to set rate to something other than 1.0f to start with for Android 4.1 based Nexus 7. Perhaps a bug?
-        sink_stream = soundPool.play(sink, 1.0f, 1.0f, 0, -1, 0.99f);
-        soundPool.setVolume(sink_stream, 0.0f, 0.0f);
-        beeping = false;
+
 
         while (running) {
 
+            try {
+                while (beepOn) {
+
+                    tone_1000_stream = soundPool.play(tone_1000, 1.0f, 1.0f, 0, -1, getRateFromTone1000(var));//need to set rate to something other than 1.0f to start with for Android 4.1 based Nexus 7. Perhaps a bug?
+                    Thread.sleep((int) (cadenceFunction.getValue(var) * 1000));
+                    soundPool.setVolume(tone_1000_stream, 0.0f, 0.0f);
+                    Thread.sleep((int) (cadenceFunction.getValue(var) * 1000));
+                }
+            } catch (InterruptedException e) {
+                soundPool.stop(tone_1000_stream);
+            }
+
 
             try {
-                Thread.sleep((int) (cadence * 1000));
+                while (sinkOn) {
+
+                    sink_stream = soundPool.play(sink, 1.0f, 1.0f, 0, -1, getRateFromTone500(var));//need to set rate to something other than 1.0f to start with for Android 4.1 based Nexus 7. Perhaps a bug?
+
+                    Thread.sleep(Long.MAX_VALUE);
+
+                }
+
+
+            } catch (InterruptedException e) {
+                soundPool.stop(sink_stream);
+
+            }
+
+            try {
+
+                while (silentPause) {
+
+                    Thread.sleep(Long.MAX_VALUE);
+                }
+
+
             } catch (InterruptedException e) {
 
             }
 
 
-            soundPool.setVolume(tone_1000_stream, 0.0f, 0.0f);
-
-
-            try {
-                Thread.sleep((int) (cadence * 1000));
-            } catch (InterruptedException e) {
-
-            }
-            if (beeping) {
-
-                soundPool.setVolume(tone_1000_stream, 1.0f, 1.0f);
-
-
-            }
         }
 
         vario.removeChangeListener(this);
@@ -148,9 +189,11 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
     }
 
 
-    public void setRunning(boolean running) {
-
+    public synchronized void setRunning(boolean running) {
         this.running = running;
+        if (beepOn || sinkOn || silentPause) {
+            thread.interrupt();
+        }
     }
 
 
@@ -158,26 +201,49 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
         var = newVar;
         if (soundPool != null) {
 
-            soundPool.setRate(tone_1000_stream, getRateFromTone1000(var));
-
-            if (var >= varioAudioThreshold) {
+            if (var >= varioAudioThreshold && !beeping && !sinking) {//need to start beeping
+                beepOn = true;
+                sinkOn = false;
+                silentPause = false;
                 beeping = true;
-            }
-            if (var < varioAudioCutoff) {
+                thread.interrupt();
+
+            } else if (var < varioAudioCutoff && beeping) {//need to stop beeping
+                beepOn = false;
+                sinkOn = false;
+                silentPause = true;
                 beeping = false;
+                thread.interrupt();
+
+            } else if (beeping) {//just stay beeping and alter the rate
+                soundPool.setRate(tone_1000_stream, getRateFromTone1000(var));
+
+            }
+
+            if (var <= sinkAudioThreshold && !sinking && !beeping) {//need to start sinking
+                beepOn = false;
+                sinkOn = true;
+                silentPause = false;
+                sinking = true;
+                thread.interrupt();
+            } else if (var > sinkAudioCutoff && sinking) {//need to stop sinking
+                beepOn = false;
+                sinkOn = false;
+                silentPause = true;
+                sinking = false;
+                thread.interrupt();
+
+            } else if (sinking) {
+                // just stay sinking and alter the rate;
+                soundPool.setRate(sink_stream, getRateFromTone500(var));
             }
 
 
-            if (var < sinkAudioThreshold) {
-                soundPool.setVolume(sink_stream, 1.0f, 1.0f);
-            } else {
-                soundPool.setVolume(sink_stream, 0.0f, 0.0f);
-            }
         }
 
 
-        cadence = cadenceFunction.getValue(var);
     }
+
 
     public float getRateFromTone1000(double var) {
         double hZ = base + increment * var;
@@ -187,6 +253,24 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
             rate = 0.5f;
         } else if (rate > 2.0f) {
             rate = 2.0f;
+        } else if (rate == 1.0f) {
+            rate = 1.0f + Float.MIN_VALUE;
+        }
+        return rate;
+
+
+    }
+
+    public float getRateFromTone500(double var) {
+        double hZ = sinkBase + sinkIncrement * var;
+
+        float rate = (float) hZ / 500.0f;
+        if (rate < 0.5f) {
+            rate = 0.5f;
+        } else if (rate > 2.0f) {
+            rate = 2.0f;
+        } else if (rate == 1.0f) {
+            rate = 1.0f + Float.MIN_VALUE;
         }
         return rate;
 
@@ -199,6 +283,7 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
 
             vario.addChangeListener(this);
             thread = new Thread(this);
+            thread.setPriority(Thread.MAX_PRIORITY);
             thread.start();
         }
 

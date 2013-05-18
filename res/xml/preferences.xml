@@ -177,6 +177,16 @@
                 android:title="Vario"
                 android:key="vario_category">
             <EditTextPreference
+                    android:key="kalman_noise"
+                    android:title="Kalman Filter Noise"
+                    android:summary="The factor used for Kalman Filter noise"
+                    android:dialogTitle="Kalman Filter Noise"
+                    android:dialogMessage="Advanced users only - set to 0.2 by default"
+                    android:defaultValue="0.2"
+                    android:numeric="decimal"
+                    />
+
+            <EditTextPreference
                     android:key="alt_damp"
                     android:title="Altitude Damping Factor"
                     android:summary="The damping filter factor for Altitude measurements"
@@ -192,7 +202,7 @@
                     android:title="Vario 2 Damping"
                     android:summary="The damping filter factor for Vario2 measurements"
                     android:dialogTitle="Vario 2 Damping"
-                    android:dialogMessage="Advanced users only - set to 1.0 by default"
+                    android:dialogMessage="Advanced users only - set to 0.05 by default"
                     android:defaultValue="0.05"
                     android:numeric="decimal"
                     />
@@ -204,18 +214,18 @@
 
                 <EditTextPreference
                         android:key="audio_basehz"
-                        android:title="Vario Base Frequency"
+                        android:title="Lift Base Frequency"
                         android:summary="Base tone for vario beeps"
-                        android:dialogTitle="Vario Base Frequency"
-                        android:dialogMessage="The base tone for vario beeps"
-                        android:defaultValue="700"
+                        android:dialogTitle="Lift Base Frequency"
+                        android:dialogMessage="The base tone for vario lift beeps"
+                        android:defaultValue="1000"
                         android:numeric="integer"/>
                 <EditTextPreference
                         android:key="audio_incrementhz"
-                        android:title="Vario Increment Frequency"
+                        android:title="Lift Increment Frequency"
                         android:summary="The increase in tone for each 1 m/s of vario"
-                        android:dialogTitle="Vario Increment Frequency"
-                        android:dialogMessage="For each 1 m/s of vario the audio frequency will increase by this amount"
+                        android:dialogTitle="Lift Increment Frequency"
+                        android:dialogMessage="For each 1 m/s of lift the audio frequency will increase by this amount"
                         android:defaultValue="100"
                         android:numeric="integer"
                         />
@@ -231,19 +241,47 @@
                 <EditTextPreference
                         android:key="vario_audio_cutoff"
                         android:title="Vario Audio Cutoff"
-                        android:summary="The value which stops the variou beeping"
+                        android:summary="The value below which stops the vario beeping"
                         android:dialogTitle="Vario Audio Cutoff"
                         android:dialogMessage="If the vario is beeping it will stop below this value. Should be lower than Vario Audio Threshold."
                         android:defaultValue="0.05"
                         android:numeric="decimal"
+                        />
+
+                <EditTextPreference
+                        android:key="sink_audio_basehz"
+                        android:title="Sink Base Frequency"
+                        android:summary="Sink tone"
+                        android:dialogTitle="sink Base Frequency"
+                        android:dialogMessage="The base tone for sink"
+                        android:defaultValue="500"
+                        android:numeric="integer"
+                        />
+                <EditTextPreference
+                        android:key="sink_audio_incrementhz"
+                        android:title="Sink Increment Frequency"
+                        android:summary="The decrese in sink tone for each -1 m/s"
+                        android:dialogTitle="Sink Increment Frequency"
+                        android:dialogMessage="For each -1 m/s of sink the audio frequency will decrease by this amount"
+                        android:defaultValue="100"
+                        android:numeric="integer"
                         />
                 <EditTextPreference
                         android:key="sink_audio_threshold"
                         android:title="Sink Audio Threshold"
                         android:summary="The value below which the sink tone plays"
                         android:dialogTitle="Sink Audio Threshold"
-                        android:dialogMessage="Below this value in m/s the sink tone will play"
+                        android:dialogMessage="Below this value in m/s the sink tone will start playing"
                         android:defaultValue="-2.0"
+                        android:numeric="decimal"
+                        />
+                <EditTextPreference
+                        android:key="sink_audio_cutoff"
+                        android:title="Sink Audio Cutoff"
+                        android:summary="The value above which the sink tone stops playing"
+                        android:dialogTitle="Sink Audio Threshold"
+                        android:dialogMessage="Above this value in m/s the sink tone will stop playing. Should be higher than Sink Audio Cutoff"
+                        android:defaultValue="-1.5"
                         android:numeric="decimal"
                         />
 

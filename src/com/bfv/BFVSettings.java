@@ -91,45 +91,45 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
         double alt_damp = Double.valueOf(sharedPrefs.getString("alt_damp", "0.05"));
         bfv.getAlt().setAltDamp(alt_damp);
 
-//        double var1_damp = Double.valueOf(sharedPrefs.getString("var1_damp", "0.05"));
-//        bfv.getVario().setVarDamp(var1_damp);
-//
-//        int var1_window = Integer.valueOf(sharedPrefs.getString("var1_window", "75"));
-//        bfv.getVario().setWindowSize(var1_window);
-//
-//        int var1_useAltType = Integer.valueOf(sharedPrefs.getString("var1_useAltType", Vario.VAR_USE_RAW_ALT + ""));
-//        bfv.getVario().setVarUseAltType(var1_useAltType);
+        double kalman_noise = Double.valueOf(sharedPrefs.getString("kalman_noise", "0.2"));
+        bfv.getAlt().setPositionNoise(kalman_noise);
 
         double var2_damp = Double.valueOf(sharedPrefs.getString("var2_damp", "0.05"));
         bfv.getDampedVario().setVarDamp(var2_damp);
 
-//        int var2_window = Integer.valueOf(sharedPrefs.getString("var2_window", "200"));
-//        bfv.getVario2().setWindowSize(var2_window);
-//
-//        int var2_useAltType = Integer.valueOf(sharedPrefs.getString("var2_useAltType", "" + Vario.VAR_USE_DAMP_ALT));
-//        bfv.getVario2().setVarUseAltType(var2_useAltType);
-
         boolean audio_enabled = sharedPrefs.getBoolean("audio_enabled", false);
         BlueFlyVario.blueFlyVario.setBeeps(audio_enabled);
 
-
-        int audio_basehz = Integer.valueOf(sharedPrefs.getString("audio_basehz", "700"));
-        BlueFlyVario.blueFlyVario.getBeeps().setBase(audio_basehz);
-
-
-        int audio_incrementhz = Integer.valueOf(sharedPrefs.getString("audio_incrementhz", "100"));
-        BlueFlyVario.blueFlyVario.getBeeps().setIncrement(audio_incrementhz);
+        if (BlueFlyVario.blueFlyVario.getBeeps() != null) {
+            int audio_basehz = Integer.valueOf(sharedPrefs.getString("audio_basehz", "1000"));
+            BlueFlyVario.blueFlyVario.getBeeps().setBase(audio_basehz);
 
 
-        double vario_audio_threshold = Double.valueOf(sharedPrefs.getString("vario_audio_threshold", "0.2"));
-        BlueFlyVario.blueFlyVario.getBeeps().setVarioAudioThreshold(vario_audio_threshold);
-
-        double vario_audio_cutoff = Double.valueOf(sharedPrefs.getString("vario_audio_cutoff", "0.05"));
-        BlueFlyVario.blueFlyVario.getBeeps().setVarioAudioCutoff(vario_audio_cutoff);
+            int audio_incrementhz = Integer.valueOf(sharedPrefs.getString("audio_incrementhz", "100"));
+            BlueFlyVario.blueFlyVario.getBeeps().setIncrement(audio_incrementhz);
 
 
-        double sink_audio_threshold = Double.valueOf(sharedPrefs.getString("sink_audio_threshold", "-2.0"));
-        BlueFlyVario.blueFlyVario.getBeeps().setSinkAudioThreshold(sink_audio_threshold);
+            double vario_audio_threshold = Double.valueOf(sharedPrefs.getString("vario_audio_threshold", "0.2"));
+            BlueFlyVario.blueFlyVario.getBeeps().setVarioAudioThreshold(vario_audio_threshold);
+
+            double vario_audio_cutoff = Double.valueOf(sharedPrefs.getString("vario_audio_cutoff", "0.05"));
+            BlueFlyVario.blueFlyVario.getBeeps().setVarioAudioCutoff(vario_audio_cutoff);
+
+            int sink_audio_basehz = Integer.valueOf(sharedPrefs.getString("sink_audio_basehz", "500"));
+            BlueFlyVario.blueFlyVario.getBeeps().setSinkBase(sink_audio_basehz);
+
+
+            int sink_audio_incrementhz = Integer.valueOf(sharedPrefs.getString("sink_audio_incrementhz", "100"));
+            BlueFlyVario.blueFlyVario.getBeeps().setSinkIncrement(sink_audio_incrementhz);
+
+
+            double sink_audio_threshold = Double.valueOf(sharedPrefs.getString("sink_audio_threshold", "-2.0"));
+            BlueFlyVario.blueFlyVario.getBeeps().setSinkAudioThreshold(sink_audio_threshold);
+
+            double sink_audio_cutoff = Double.valueOf(sharedPrefs.getString("sink_audio_cutoff", "-1.5"));
+            BlueFlyVario.blueFlyVario.getBeeps().setSinkAudioCutoff(sink_audio_cutoff);
+
+        }
 
 
         bfv.getVarioSurface().scheduleSetUpData();
@@ -268,35 +268,17 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
             BlueFlyVario.blueFlyVario.getAlt().setAltDamp(alt_damp);
         }
 
-//        if (key.equals("var1_damp")) {
-//            double var1_damp = Double.valueOf(sharedPreferences.getString("var1_damp", "0.05"));
-//            BlueFlyVario.blueFlyVario.getVario().setVarDamp(var1_damp);
-//        }
-//
-//        if (key.equals("var1_window")) {
-//            int var1_window = Integer.valueOf(sharedPreferences.getString("var1_window", "75"));
-//            BlueFlyVario.blueFlyVario.getVario().setWindowSize(var1_window);
-//        }
-//
-//        if (key.equals("var1_useAltType")) {
-//            int var1_useAltType = Integer.valueOf(sharedPreferences.getString("var1_useAltType", Vario.VAR_USE_RAW_ALT + ""));
-//            BlueFlyVario.blueFlyVario.getVario().setVarUseAltType(var1_useAltType);
-//        }
+        if (key.equals("kalman_noise")) {
+            double kalman_noise = Double.valueOf(sharedPreferences.getString("kalman_noise", "0.2"));
+            BlueFlyVario.blueFlyVario.getAlt().setPositionNoise(kalman_noise);
+        }
+
 
         if (key.equals("var2_damp")) {
             double var2_damp = Double.valueOf(sharedPreferences.getString("var2_damp", "0.05"));
             BlueFlyVario.blueFlyVario.getDampedVario().setVarDamp(var2_damp);
         }
 
-//        if (key.equals("var2_window")) {
-//            int var2_window = Integer.valueOf(sharedPreferences.getString("var2_window", "200"));
-//            BlueFlyVario.blueFlyVario.getVario2().setWindowSize(var2_window);
-//        }
-//
-//        if (key.equals("var2_useAltType")) {
-//            int var2_useAltType = Integer.valueOf(sharedPreferences.getString("var2_useAltType", "" + Vario.VAR_USE_DAMP_ALT));
-//            BlueFlyVario.blueFlyVario.getVario2().setVarUseAltType(var2_useAltType);
-//        }
 
         if (key.equals("display_varioBufferSize")) {
             //int varioBufferSize = Integer.valueOf(sharedPreferences.getString("display_varioBufferSize", "500" ));
@@ -308,7 +290,7 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
         }
 
         if (key.equals("audio_basehz")) {
-            int audio_basehz = Integer.valueOf(sharedPreferences.getString("audio_basehz", "700"));
+            int audio_basehz = Integer.valueOf(sharedPreferences.getString("audio_basehz", "1000"));
             BlueFlyVario.blueFlyVario.getBeeps().setBase(audio_basehz);
         }
         if (key.equals("audio_incrementhz")) {
@@ -326,9 +308,25 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
             BlueFlyVario.blueFlyVario.getBeeps().setVarioAudioCutoff(vario_audio_cutoff);
 
         }
+
+        if (key.equals("sink_audio_basehz")) {
+            int sink_audio_basehz = Integer.valueOf(sharedPreferences.getString("sink_audio_basehz", "500"));
+            BlueFlyVario.blueFlyVario.getBeeps().setSinkBase(sink_audio_basehz);
+        }
+        if (key.equals("sink_audio_incrementhz")) {
+            int sink_audio_incrementhz = Integer.valueOf(sharedPreferences.getString("sink_audio_incrementhz", "100"));
+            BlueFlyVario.blueFlyVario.getBeeps().setSinkIncrement(sink_audio_incrementhz);
+
+        }
+
         if (key.equals("sink_audio_threshold")) {
             double sink_audio_threshold = Double.valueOf(sharedPreferences.getString("sink_audio_threshold", "-2.0"));
             BlueFlyVario.blueFlyVario.getBeeps().setSinkAudioThreshold(sink_audio_threshold);
+        }
+
+        if (key.equals("sink_audio_cutoff")) {
+            double sink_audio_cutoff = Double.valueOf(sharedPreferences.getString("sink_audio_cutoff", "-1.5"));
+            BlueFlyVario.blueFlyVario.getBeeps().setSinkAudioCutoff(sink_audio_cutoff);
         }
 
         if (key.equals("audio_enabled")) {

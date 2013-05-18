@@ -296,24 +296,17 @@ public class BlueFlyVario extends MapActivity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         double alt_setqnh = Double.valueOf(sharedPref.getString("alt_setqnh", "1013.25")) * 100;
+        double alt_damp = Double.valueOf(sharedPref.getString("alt_damp", "0.05"));
+        double var2_damp = Double.valueOf(sharedPref.getString("var2_damp", "0.05"));
+        double kalman_noise = Double.valueOf(sharedPref.getString("kalman_noise", "0.2"));
 
-
-//        double alt_damp = Double.valueOf(sharedPref.getString("alt_damp", "0.05"));
-//        alt = new Altitude(alt_setqnh, alt_damp, "Alt");
         alt = new KalmanFilteredAltitude(alt_setqnh, "Alt");
-//        double var1_damp = Double.valueOf(sharedPref.getString("var1_damp", "0.05"));
-//        int var1_window = Integer.valueOf(sharedPref.getString("var1_window", "75"));
-//        int var1_useAltType = Integer.valueOf(sharedPref.getString("var1_useAltType", Vario.VAR_USE_RAW_ALT + ""));
-//        vario = new Vario(var1_damp, var1_window, "Var1", var1_useAltType);
-//        alt.addVario(vario);
+        alt.setAltDamp(alt_damp);
+        alt.setPositionNoise(kalman_noise);
         kalmanVario = alt.getKalmanVario();
-//        double var2_damp = Double.valueOf(sharedPref.getString("var2_damp", "1.0"));
-//        int var2_window = Integer.valueOf(sharedPref.getString("var2_window", "200"));
-//        int var2_useAltType = Integer.valueOf(sharedPref.getString("var2_useAltType", "" + Vario.VAR_USE_DAMP_ALT));
-//        vario2 = new Vario(var2_damp, var2_window, "Var2", var2_useAltType);
-//        alt.addVario(vario2);
+
         dampedVario = alt.getDampedVario();
-//
+        dampedVario.setVarDamp(var2_damp);
 
 
     }

@@ -108,7 +108,8 @@ public final class R {
         public static final int default_layout_old = 0x7f050001;
         public static final int flight_sim_test = 0x7f050002;
         public static final int sink = 0x7f050003;
-        public static final int tone_1000mhz = 0x7f050004;
+        public static final int sink_tone500mhz = 0x7f050004;
+        public static final int tone_1000mhz = 0x7f050005;
     }
 
     public static final class string {
