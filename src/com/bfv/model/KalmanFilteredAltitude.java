@@ -20,32 +20,49 @@ package com.bfv.model;
 
 import com.bfv.DataSource;
 
-import java.util.ArrayList;
-
-public class Altitude implements DataSource {
+public class KalmanFilteredAltitude implements DataSource {
     public static double STANDARD_SEA_LEVEL_PRESSURE = 101325;  //in pascals
     private double seaLevelPressure;
-    private double altDamp = 1.0;
+
     private double rawPressure;
     private double rawAltitude;
     private double dampedAltitude;
+    private double kalmanAltitude;
+
     private boolean dampedAltStarted = false;
     private String name;
-    private ArrayList varios;
+    private KalmanFilter kalmanFilter;
 
-    public Altitude() {
-    }
+    private KalmanFilteredVario kalmanVario;
 
-    public Altitude(double seaLevelPressure, double altDamp, String name) {
+    private KalmanFilteredVario dampedVario;
+    private double positionNoise = 0.2;
+    private double accelerationNoise = 1.0;
+
+    private double altDamp = 0.05;
+
+
+    public KalmanFilteredAltitude(double seaLevelPressure, String name) {
         this.seaLevelPressure = seaLevelPressure;
-        this.altDamp = altDamp;
         this.name = name;
+        kalmanFilter = new KalmanFilter(accelerationNoise);
+
+        kalmanVario = new KalmanFilteredVario(this, 1.0, KalmanFilteredVario.KALMAN_VARIO);
+        dampedVario = new KalmanFilteredVario(this, 0.05, KalmanFilteredVario.DAMPED_VARIO);
+
+
     }
+
 
     public synchronized double addPressure(double pressure, double time) {
 
         rawPressure = pressure;
         rawAltitude = 44330.0 * (1 - Math.pow((pressure / seaLevelPressure), 0.190295));
+
+        kalmanFilter.update(rawAltitude, positionNoise, 0.02);
+
+        kalmanAltitude = kalmanFilter.getXAbs();
+
         if (dampedAltStarted) {
             dampedAltitude = dampedAltitude + altDamp * (rawAltitude - dampedAltitude);
         } else {
@@ -53,12 +70,9 @@ public class Altitude implements DataSource {
             dampedAltStarted = true;
         }
 
-        if (varios != null) {
-            for (int i = 0; i < varios.size(); i++) {
-                Vario vario = (Vario) varios.get(i);
-                vario.addData(time);
-            }
-        }
+        kalmanVario.addData(time);
+        dampedVario.addData(time);
+
 
         return rawAltitude;
     }
@@ -74,10 +88,6 @@ public class Altitude implements DataSource {
         dampedAltStarted = true;
         seaLevelPressure = qnh;
 
-        for (int i = 0; i < varios.size(); i++) {
-            Vario vario = (Vario) varios.get(i);
-            vario.resetWindow();
-        }
 
         return seaLevelPressure;
 
@@ -93,13 +103,6 @@ public class Altitude implements DataSource {
         dampedAltStarted = false;
     }
 
-    public double getAltDamp() {
-        return altDamp;
-    }
-
-    public void setAltDamp(double altDamp) {
-        this.altDamp = altDamp;
-    }
 
     public double getRawPressure() {
         return rawPressure;
@@ -122,25 +125,24 @@ public class Altitude implements DataSource {
         return name;
     }
 
-    public void addVario(Vario vario) {
-        if (varios == null) {
-            varios = new ArrayList();
-        }
-        varios.add(vario);
-        vario.registerAltitude(this);
+    public KalmanFilteredVario getKalmanVario() {
+        return kalmanVario;
     }
 
-    public Vario getVario(String name) {
-        if (varios != null) {
-            for (int i = 0; i < varios.size(); i++) {
-                Vario vario = (Vario) varios.get(i);
-                if (vario.getName().matches(name)) {
-                    return vario;
-                }
+    public KalmanFilteredVario getDampedVario() {
+        return dampedVario;
+    }
 
-            }
-        }
-        return null;
+    public double getVarioValue() {
+        return kalmanFilter.getXVel();
+    }
+
+    public double getPositionNoise() {
+        return positionNoise;
+    }
+
+    public void setPositionNoise(double positionNoise) {
+        this.positionNoise = positionNoise;
     }
 
     public String toString() {
@@ -149,5 +151,13 @@ public class Altitude implements DataSource {
 
     public synchronized double getValue() {
         return dampedAltitude;
+    }
+
+    public double getAltDamp() {
+        return altDamp;
+    }
+
+    public void setAltDamp(double altDamp) {
+        this.altDamp = altDamp;
     }
 }

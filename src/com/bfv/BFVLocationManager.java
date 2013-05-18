@@ -32,10 +32,7 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
-import com.bfv.model.Altitude;
-import com.bfv.model.LocationAltVar;
-import com.bfv.model.Vario;
-import com.bfv.model.WindCalculator;
+import com.bfv.model.*;
 import com.bfv.util.ArrayUtil;
 import com.bfv.util.FitCircle;
 import com.bfv.view.VarioSurfaceView;
@@ -62,9 +59,9 @@ public class BFVLocationManager implements LocationListener {
     private double timeCut;
 
     private BFVService bfvService;
-    private Altitude alt;
-    private Vario var1;
-    private Vario var2;
+    private KalmanFilteredAltitude alt;
+    private KalmanFilteredVario kalmanVario;
+    private KalmanFilteredVario dampedVario;
 
     private double maxDistance;
     private double maxDriftedDistance;
@@ -96,9 +93,9 @@ public class BFVLocationManager implements LocationListener {
         this.bfvService = bfvService;
         this.mHandler = mHandler;
 
-        alt = bfvService.getAltitude("Alt");
-        var1 = alt.getVario("Var1");
-        var2 = alt.getVario("Var2");
+        alt = bfvService.getAltitude();
+        kalmanVario = alt.getKalmanVario();
+        dampedVario = alt.getDampedVario();
         state = STATE_GPS_NOT_ENABLED;
 
         boolean alt_setgps = BFVSettings.sharedPrefs.getBoolean("alt_setgps", false);
@@ -244,7 +241,7 @@ public class BFVLocationManager implements LocationListener {
         }
 
 
-        LocationAltVar newLoc = new LocationAltVar(location, alt.getDampedAltitude(), var1.getMinMaxAvgSinceLast()[1], var2.getMinMaxAvgSinceLast()[1]);//take the max one
+        LocationAltVar newLoc = new LocationAltVar(location, alt.getDampedAltitude(), kalmanVario.getMinMaxAvgSinceLast()[1], dampedVario.getMinMaxAvgSinceLast()[1]);//take the max one
         locations.add(newLoc);
 
 

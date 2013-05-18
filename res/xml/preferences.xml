@@ -185,70 +185,18 @@
                     android:defaultValue="0.05"
                     android:numeric="decimal"
                     />
-            <PreferenceScreen
-                    android:key="var1_screen_advanced"
-                    android:title="Instantaneous - Vario 1"
-                    android:persistent="false">
 
-                <EditTextPreference
-                        android:key="var1_window"
-                        android:title="Vario 1 Window"
-                        android:summary="The number of measurements in the vario1 linear regression window"
-                        android:dialogTitle="Vario 1 Window"
-                        android:dialogMessage="Advanced users only - set to 75 by default"
-                        android:defaultValue="75"
-                        android:numeric="integer"
-                        />
-                <EditTextPreference
-                        android:key="var1_damp"
-                        android:title="Vario 1 Damping"
-                        android:summary="The damping filter factor for Vario1 measurements"
-                        android:dialogTitle="Vario 1 Damping"
-                        android:dialogMessage="Advanced users only - set to 0.05 by default"
-                        android:defaultValue="0.05"
-                        android:numeric="decimal"
-                        />
-                <ListPreference
-                        android:key="var1_useAltType"
-                        android:title="Vario 1 Alt Type"
-                        android:dialogTitle="Vario 1 Alt Type"
-                        android:entries="@array/useAltTypeEntries"
-                        android:entryValues="@array/useAltTypeValues"
-                        android:defaultValue="2"
-                        />
-            </PreferenceScreen>
-            <PreferenceScreen
-                    android:key="var2_screen_advanced"
-                    android:title="Averaged - Vario 2"
-                    android:persistent="false">
 
-                <EditTextPreference
-                        android:key="var2_window"
-                        android:title="Vario 2 Window"
-                        android:summary="The number of measurements in the vario2 linear regression window"
-                        android:dialogTitle="Vario 2 Window"
-                        android:dialogMessage="Advanced users only - set to 200 by default"
-                        android:defaultValue="200"
-                        android:numeric="integer"
-                        />
-                <EditTextPreference
-                        android:key="var2_damp"
-                        android:title="Vario 2 Damping"
-                        android:summary="The damping filter factor for Vario2 measurements"
-                        android:dialogTitle="Vario 2 Damping"
-                        android:dialogMessage="Advanced users only - set to 1.0 by default"
-                        android:defaultValue="1.0"
-                        android:numeric="decimal"
-                        />
-                <ListPreference
-                        android:key="var2_useAltType"
-                        android:title="Vario 2 Alt Type"
-                        android:dialogTitle="Vario 2 Alt Type"
-                        android:entries="@array/useAltTypeEntries"
-                        android:entryValues="@array/useAltTypeValues"
-                        android:defaultValue="1"
-                        />
-            </PreferenceScreen>
+            <EditTextPreference
+                    android:key="var2_damp"
+                    android:title="Vario 2 Damping"
+                    android:summary="The damping filter factor for Vario2 measurements"
+                    android:dialogTitle="Vario 2 Damping"
+                    android:dialogMessage="Advanced users only - set to 1.0 by default"
+                    android:defaultValue="0.05"
+                    android:numeric="decimal"
+                    />
+
             <PreferenceScreen
                     android:key="audio_advanced"
                     android:title="Audio"

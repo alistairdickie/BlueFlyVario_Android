@@ -37,6 +37,8 @@ import android.view.*;
 import android.widget.*;
 import com.bfv.audio.BeepThread;
 import com.bfv.model.Altitude;
+import com.bfv.model.KalmanFilteredAltitude;
+import com.bfv.model.KalmanFilteredVario;
 import com.bfv.model.Vario;
 import com.bfv.view.map.MapViewManager;
 import com.bfv.view.VarioSurfaceView;
@@ -86,9 +88,9 @@ public class BlueFlyVario extends MapActivity {
     private BluetoothDevice device;
 
     private VarioSurfaceView varioSurface;
-    private Vario vario;
-    private Vario vario2;
-    private Altitude alt;
+    private KalmanFilteredVario kalmanVario;
+    private KalmanFilteredVario dampedVario;
+    private KalmanFilteredAltitude alt;
 
     private BeepThread beeps;
 
@@ -149,7 +151,7 @@ public class BlueFlyVario extends MapActivity {
 
         // Initialize the BFVService to perform bluetooth connections
         varioService = new BFVService(this, mHandler);
-        varioService.addAltitude(alt);
+        varioService.setAltitude(alt);
         varioService.setUpLocationManager();   //must call after the altitude has been added.
 
 
@@ -264,6 +266,7 @@ public class BlueFlyVario extends MapActivity {
 
     @Override
     public void onBackPressed() {
+
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
             return;
@@ -293,20 +296,26 @@ public class BlueFlyVario extends MapActivity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         double alt_setqnh = Double.valueOf(sharedPref.getString("alt_setqnh", "1013.25")) * 100;
-        double alt_damp = Double.valueOf(sharedPref.getString("alt_damp", "0.05"));
-        alt = new Altitude(alt_setqnh, alt_damp, "Alt");
 
-        double var1_damp = Double.valueOf(sharedPref.getString("var1_damp", "0.05"));
-        int var1_window = Integer.valueOf(sharedPref.getString("var1_window", "75"));
-        int var1_useAltType = Integer.valueOf(sharedPref.getString("var1_useAltType", Vario.VAR_USE_RAW_ALT + ""));
-        vario = new Vario(var1_damp, var1_window, "Var1", var1_useAltType);
-        alt.addVario(vario);
 
-        double var2_damp = Double.valueOf(sharedPref.getString("var2_damp", "1.0"));
-        int var2_window = Integer.valueOf(sharedPref.getString("var2_window", "200"));
-        int var2_useAltType = Integer.valueOf(sharedPref.getString("var2_useAltType", "" + Vario.VAR_USE_DAMP_ALT));
-        vario2 = new Vario(var2_damp, var2_window, "Var2", var2_useAltType);
-        alt.addVario(vario2);
+//        double alt_damp = Double.valueOf(sharedPref.getString("alt_damp", "0.05"));
+//        alt = new Altitude(alt_setqnh, alt_damp, "Alt");
+        alt = new KalmanFilteredAltitude(alt_setqnh, "Alt");
+//        double var1_damp = Double.valueOf(sharedPref.getString("var1_damp", "0.05"));
+//        int var1_window = Integer.valueOf(sharedPref.getString("var1_window", "75"));
+//        int var1_useAltType = Integer.valueOf(sharedPref.getString("var1_useAltType", Vario.VAR_USE_RAW_ALT + ""));
+//        vario = new Vario(var1_damp, var1_window, "Var1", var1_useAltType);
+//        alt.addVario(vario);
+        kalmanVario = alt.getKalmanVario();
+//        double var2_damp = Double.valueOf(sharedPref.getString("var2_damp", "1.0"));
+//        int var2_window = Integer.valueOf(sharedPref.getString("var2_window", "200"));
+//        int var2_useAltType = Integer.valueOf(sharedPref.getString("var2_useAltType", "" + Vario.VAR_USE_DAMP_ALT));
+//        vario2 = new Vario(var2_damp, var2_window, "Var2", var2_useAltType);
+//        alt.addVario(vario2);
+        dampedVario = alt.getDampedVario();
+//
+
+
     }
 
 
@@ -672,15 +681,15 @@ public class BlueFlyVario extends MapActivity {
         return varioService;
     }
 
-    public Vario getVario() {
-        return vario;
+    public KalmanFilteredVario getKalmanVario() {
+        return kalmanVario;
     }
 
-    public Vario getVario2() {
-        return vario2;
+    public KalmanFilteredVario getDampedVario() {
+        return dampedVario;
     }
 
-    public Altitude getAlt() {
+    public KalmanFilteredAltitude getAlt() {
         return alt;
     }
 
@@ -699,10 +708,10 @@ public class BlueFlyVario extends MapActivity {
     public void setBeeps(boolean enableBeeping) {
         if (enableBeeping) {
             if (beeps == null) {
-                beeps = new BeepThread(this, vario);
+                beeps = new BeepThread(this, kalmanVario);
             } else {
                 beeps.setRunning(false);
-                beeps = new BeepThread(this, vario);
+                beeps = new BeepThread(this, kalmanVario);
             }
 
             beepStatus.setImageResource(R.drawable.ic_audio_blue);

@@ -140,7 +140,7 @@ public class ConnectedThread extends Thread {
     }
 
     public void handleLine(String line) {
-        time += timeInterval;
+
         if (line == null || service == null) {
             return;
         }
@@ -148,7 +148,14 @@ public class ConnectedThread extends Thread {
         if (split[0] == null) {
             return;
         }
+
         if (split[0].equals("PRS")) {
+
+            if (this.lastUpdateType == UPDATE_BAT) {
+                time = 0.04;
+            } else {
+                time = 0.02;
+            }
 
             this.lastUpdateType = UPDATE_PRS;
 
@@ -172,7 +179,6 @@ public class ConnectedThread extends Thread {
             service.updateBattery(chargeFromVolts.getValue(bat / 1000.0));
 
         } else if (split[0].equals("BFV")) {
-            time = 0; //the device has been reset so start from scratch
 
 
             this.lastUpdateType = UPDATE_MSG;

@@ -33,17 +33,17 @@ public class Vario implements DataSource {
     private double damp;
     private int windowSize;
     private boolean windowFull;
-    private String name;
+    public String name;
 
 
     private int r;
 
-    private double var;
-    private Altitude altitude;
+    public double var;
+    public Altitude altitude;
 
     private int varUseAltType;
 
-    private double lastVar;
+    public double lastVar;
 
     private RegressionSlope regression;
 
@@ -51,10 +51,13 @@ public class Vario implements DataSource {
 
     private ArrayList<VarioChangeListener> varioChangeListeners;
 
-    private double maxVarSinceLast = -1000.0;
-    private double minVarSinceLast = 1000.0;
-    private double avgVarSinceLast = 0.0;
-    private int countSinceLast = 0;
+    public double maxVarSinceLast = -1000.0;
+    public double minVarSinceLast = 1000.0;
+    public double avgVarSinceLast = 0.0;
+    public int countSinceLast = 0;
+
+    public Vario() {
+    }
 
     public Vario(double damp, int windowSize, String name, int varUseAltType) {
         this.damp = damp;
@@ -66,7 +69,7 @@ public class Vario implements DataSource {
     }
 
 
-    public void setDamp(double damp) {
+    public void setVarDamp(double damp) {
         this.damp = damp;
     }
 
@@ -140,7 +143,7 @@ public class Vario implements DataSource {
 
     }
 
-    private void notifyListeners(double changedVar) {
+    public void notifyListeners(double changedVar) {
         if (varioChangeListeners == null) {
             return;
         }
@@ -164,6 +167,10 @@ public class Vario implements DataSource {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public synchronized void addChangeListener(VarioChangeListener varioChangeListener) {

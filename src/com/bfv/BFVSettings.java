@@ -91,23 +91,23 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
         double alt_damp = Double.valueOf(sharedPrefs.getString("alt_damp", "0.05"));
         bfv.getAlt().setAltDamp(alt_damp);
 
-        double var1_damp = Double.valueOf(sharedPrefs.getString("var1_damp", "0.05"));
-        bfv.getVario().setDamp(var1_damp);
+//        double var1_damp = Double.valueOf(sharedPrefs.getString("var1_damp", "0.05"));
+//        bfv.getVario().setVarDamp(var1_damp);
+//
+//        int var1_window = Integer.valueOf(sharedPrefs.getString("var1_window", "75"));
+//        bfv.getVario().setWindowSize(var1_window);
+//
+//        int var1_useAltType = Integer.valueOf(sharedPrefs.getString("var1_useAltType", Vario.VAR_USE_RAW_ALT + ""));
+//        bfv.getVario().setVarUseAltType(var1_useAltType);
 
-        int var1_window = Integer.valueOf(sharedPrefs.getString("var1_window", "75"));
-        bfv.getVario().setWindowSize(var1_window);
+        double var2_damp = Double.valueOf(sharedPrefs.getString("var2_damp", "0.05"));
+        bfv.getDampedVario().setVarDamp(var2_damp);
 
-        int var1_useAltType = Integer.valueOf(sharedPrefs.getString("var1_useAltType", Vario.VAR_USE_RAW_ALT + ""));
-        bfv.getVario().setVarUseAltType(var1_useAltType);
-
-        double var2_damp = Double.valueOf(sharedPrefs.getString("var2_damp", "1.0"));
-        bfv.getVario2().setDamp(var2_damp);
-
-        int var2_window = Integer.valueOf(sharedPrefs.getString("var2_window", "200"));
-        bfv.getVario2().setWindowSize(var2_window);
-
-        int var2_useAltType = Integer.valueOf(sharedPrefs.getString("var2_useAltType", "" + Vario.VAR_USE_DAMP_ALT));
-        bfv.getVario2().setVarUseAltType(var2_useAltType);
+//        int var2_window = Integer.valueOf(sharedPrefs.getString("var2_window", "200"));
+//        bfv.getVario2().setWindowSize(var2_window);
+//
+//        int var2_useAltType = Integer.valueOf(sharedPrefs.getString("var2_useAltType", "" + Vario.VAR_USE_DAMP_ALT));
+//        bfv.getVario2().setVarUseAltType(var2_useAltType);
 
         boolean audio_enabled = sharedPrefs.getBoolean("audio_enabled", false);
         BlueFlyVario.blueFlyVario.setBeeps(audio_enabled);
@@ -268,35 +268,35 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
             BlueFlyVario.blueFlyVario.getAlt().setAltDamp(alt_damp);
         }
 
-        if (key.equals("var1_damp")) {
-            double var1_damp = Double.valueOf(sharedPreferences.getString("var1_damp", "0.05"));
-            BlueFlyVario.blueFlyVario.getVario().setDamp(var1_damp);
-        }
-
-        if (key.equals("var1_window")) {
-            int var1_window = Integer.valueOf(sharedPreferences.getString("var1_window", "75"));
-            BlueFlyVario.blueFlyVario.getVario().setWindowSize(var1_window);
-        }
-
-        if (key.equals("var1_useAltType")) {
-            int var1_useAltType = Integer.valueOf(sharedPreferences.getString("var1_useAltType", Vario.VAR_USE_RAW_ALT + ""));
-            BlueFlyVario.blueFlyVario.getVario().setVarUseAltType(var1_useAltType);
-        }
+//        if (key.equals("var1_damp")) {
+//            double var1_damp = Double.valueOf(sharedPreferences.getString("var1_damp", "0.05"));
+//            BlueFlyVario.blueFlyVario.getVario().setVarDamp(var1_damp);
+//        }
+//
+//        if (key.equals("var1_window")) {
+//            int var1_window = Integer.valueOf(sharedPreferences.getString("var1_window", "75"));
+//            BlueFlyVario.blueFlyVario.getVario().setWindowSize(var1_window);
+//        }
+//
+//        if (key.equals("var1_useAltType")) {
+//            int var1_useAltType = Integer.valueOf(sharedPreferences.getString("var1_useAltType", Vario.VAR_USE_RAW_ALT + ""));
+//            BlueFlyVario.blueFlyVario.getVario().setVarUseAltType(var1_useAltType);
+//        }
 
         if (key.equals("var2_damp")) {
-            double var2_damp = Double.valueOf(sharedPreferences.getString("var2_damp", "1.0"));
-            BlueFlyVario.blueFlyVario.getVario2().setDamp(var2_damp);
+            double var2_damp = Double.valueOf(sharedPreferences.getString("var2_damp", "0.05"));
+            BlueFlyVario.blueFlyVario.getDampedVario().setVarDamp(var2_damp);
         }
 
-        if (key.equals("var2_window")) {
-            int var2_window = Integer.valueOf(sharedPreferences.getString("var2_window", "200"));
-            BlueFlyVario.blueFlyVario.getVario2().setWindowSize(var2_window);
-        }
-
-        if (key.equals("var2_useAltType")) {
-            int var2_useAltType = Integer.valueOf(sharedPreferences.getString("var2_useAltType", "" + Vario.VAR_USE_DAMP_ALT));
-            BlueFlyVario.blueFlyVario.getVario2().setVarUseAltType(var2_useAltType);
-        }
+//        if (key.equals("var2_window")) {
+//            int var2_window = Integer.valueOf(sharedPreferences.getString("var2_window", "200"));
+//            BlueFlyVario.blueFlyVario.getVario2().setWindowSize(var2_window);
+//        }
+//
+//        if (key.equals("var2_useAltType")) {
+//            int var2_useAltType = Integer.valueOf(sharedPreferences.getString("var2_useAltType", "" + Vario.VAR_USE_DAMP_ALT));
+//            BlueFlyVario.blueFlyVario.getVario2().setVarUseAltType(var2_useAltType);
+//        }
 
         if (key.equals("display_varioBufferSize")) {
             //int varioBufferSize = Integer.valueOf(sharedPreferences.getString("display_varioBufferSize", "500" ));

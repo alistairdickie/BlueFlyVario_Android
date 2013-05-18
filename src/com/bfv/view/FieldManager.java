@@ -135,7 +135,7 @@ public class FieldManager {
 
         field = new Field(FIELD_FLIGHT_DISTANCE, "flightDistance", "0.000", "Flight Distance", "m");
         field.addUnits("km", 0.001);
-        field.addUnits("m", 0.000621371192);
+        field.addUnits("mi", 0.000621371192);
         field.addUnits("nm", 0.000539956803);
         field.setDefaultMultiplierIndex(1);
         fields.add(field);
@@ -166,7 +166,7 @@ public class FieldManager {
 
             case FIELD_VARIO1:
                 if (varioService.hasPressure()) {
-                    value = surfaceView.var1.getValue();
+                    value = surfaceView.kalmanVario.getValue();
                 } else {
                     return "--";
                 }
@@ -174,7 +174,7 @@ public class FieldManager {
                 break;
             case FIELD_VARIO2:
                 if (varioService.hasPressure()) {
-                    value = surfaceView.var2.getValue();
+                    value = surfaceView.dampedVario.getValue();
                 } else {
                     return "--";
                 }

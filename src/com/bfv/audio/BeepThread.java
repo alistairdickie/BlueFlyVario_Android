@@ -26,12 +26,14 @@ import android.util.Log;
 import com.bfv.BFVSettings;
 import com.bfv.R;
 import com.bfv.VarioChangeListener;
+import com.bfv.model.KalmanFilteredVario;
 import com.bfv.model.Vario;
 import com.bfv.util.PiecewiseLinearFunction;
 import com.bfv.util.Point2d;
 
 public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLoadCompleteListener {
-    private Vario vario;
+
+    private KalmanFilteredVario vario;
     private boolean running;
     private double varioAudioThreshold;
     private double varioAudioCutoff;
@@ -61,7 +63,7 @@ public class BeepThread implements Runnable, VarioChangeListener, SoundPool.OnLo
     private PiecewiseLinearFunction cadenceFunction;
 
 
-    public BeepThread(Context context, Vario vario) {
+    public BeepThread(Context context, KalmanFilteredVario vario) {
 
         this.vario = vario;
 

@@ -31,9 +31,7 @@ import android.util.Xml;
 import android.view.*;
 import android.widget.EditText;
 import com.bfv.*;
-import com.bfv.model.Altitude;
-import com.bfv.model.LocationAltVar;
-import com.bfv.model.Vario;
+import com.bfv.model.*;
 import com.bfv.util.Point2d;
 import com.bfv.view.component.*;
 import com.bfv.view.map.BFVMapOverlay;
@@ -65,9 +63,9 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
     public BlueFlyVario bfv;
     public BFVService service;
-    public Altitude alt;
-    public Vario var1;
-    public Vario var2;
+    public KalmanFilteredAltitude alt;
+    public KalmanFilteredVario kalmanVario;
+    public KalmanFilteredVario dampedVario;
 
 
     private boolean scheduledSetUpData;
@@ -124,9 +122,10 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
         this.setOnTouchListener(this);
         gestureDetector = new GestureDetector(bfv, this);
 
-        alt = service.getAltitude("Alt");
-        var1 = alt.getVario("Var1");
-        var2 = alt.getVario("Var2");
+        alt = service.getAltitude();
+        kalmanVario = alt.getKalmanVario();
+        dampedVario = alt.getDampedVario();
+
         readSettings();
 
     }

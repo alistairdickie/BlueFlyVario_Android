@@ -21,6 +21,7 @@ package com.bfv.view.component;
 import android.graphics.*;
 import com.bfv.model.BufferData;
 import com.bfv.DataBuffer;
+import com.bfv.model.KalmanFilteredVario;
 import com.bfv.model.Vario;
 import com.bfv.util.ArrayUtil;
 import com.bfv.view.VarioSurfaceView;
@@ -44,10 +45,11 @@ public class VarioTraceViewComponent extends BFVViewComponent {
     private boolean dotsInsteadOfLines = false;
 
 
-    private Vario traceVar;
-    private Vario scaleVar;
+    private KalmanFilteredVario traceVar;
+    private KalmanFilteredVario scaleVar;
 
     private BufferData varBufferData;
+    //    private BufferData varBufferData2;
     private BufferData altBufferData;
     private Rect textBounds = new Rect();
     private DecimalFormat dfVarioScale = new DecimalFormat("+0;-0");
@@ -84,9 +86,11 @@ public class VarioTraceViewComponent extends BFVViewComponent {
         DataBuffer buffer = view.service.getDataBuffer();
         int size = buffer.getBufferSize();
         varBufferData = buffer.getData(traceVar, varBufferData);
+//        varBufferData2 = buffer.getData(scaleVar, varBufferData2);
         altBufferData = buffer.getData(view.alt, altBufferData);
 
         double[] varData = varBufferData.getData();
+//        double[] varData2 = varBufferData2.getData();
         double[] altData = altBufferData.getData();
 
 
@@ -107,7 +111,7 @@ public class VarioTraceViewComponent extends BFVViewComponent {
         double minAlt = ArrayUtil.getMinValue(altData)[0];
         double maxAlt = ArrayUtil.getMaxValue(altData)[0];
 
-        double currentAlt = view.service.getAltitude("Alt").getDampedAltitude();
+        double currentAlt = view.service.getAltitude().getDampedAltitude();
         double altScale = Math.max(maxAlt - currentAlt, currentAlt - minAlt);
         if (altScale < 1.0) {
             altScale = 1.0;
@@ -255,8 +259,10 @@ public class VarioTraceViewComponent extends BFVViewComponent {
         canvas.drawText(dfAlt.format(altScale), xLoc + width * prop + 1.5f, yLoc + height - 2.0f, paint);
 
 
+        //trace
         paint.setStrokeWidth(4.0f);
         paint.setStrokeCap(Paint.Cap.ROUND);
+
 
         float x = xLoc + width * prop + 0.5f;
 
@@ -302,6 +308,50 @@ public class VarioTraceViewComponent extends BFVViewComponent {
         }
         paint.setStrokeCap(Paint.Cap.BUTT);
 
+//         //trace2
+//        paint.setStrokeWidth(1.0f);
+//        paint.setStrokeCap(Paint.Cap.ROUND);
+//
+//
+//
+//        x = xLoc + width * prop + 0.5f;
+//
+//        i = varBufferData.getPosition();
+//        count = 0;
+//
+//        maxX = x;
+//        while (count < size - 1) {
+//
+//
+//            var = (float) varData2[i];
+//
+//
+//            if (i == 0) {
+//                varPrevious = (float) varData2[size - 1];
+//                i = size - 1;
+//
+//            } else {
+//                varPrevious = (float) varData2[i - 1];
+//                i--;
+//            }
+//
+//            if (i == maxVarIndex) {
+//                maxX = x;
+//            }
+//
+//
+//            paint.setColor(Color.WHITE);
+//
+//           canvas.drawLine(x, yZero - yScale * var, x + xStep, yZero - yScale * varPrevious, paint);
+//
+//
+//
+//            x += xStep;
+//            count++;
+//
+//        }
+//        paint.setStrokeCap(Paint.Cap.BUTT);
+
 
         //drawMaxDot
         if (max1 >= maxThreshold) {
@@ -321,9 +371,9 @@ public class VarioTraceViewComponent extends BFVViewComponent {
     public void setTraceVario(int traceVario) {
         this.traceVario = traceVario;
         if (traceVario == VARIO2) {
-            traceVar = view.var2;
+            traceVar = view.dampedVario;
         } else {
-            traceVar = view.var1;
+            traceVar = view.kalmanVario;
         }
 
     }
@@ -331,9 +381,9 @@ public class VarioTraceViewComponent extends BFVViewComponent {
     public void setScaleVario(int scaleVario) {
         this.scaleVario = scaleVario;
         if (scaleVario == VARIO2) {
-            scaleVar = view.var2;
+            scaleVar = view.dampedVario;
         } else {
-            scaleVar = view.var1;
+            scaleVar = view.kalmanVario;
         }
     }
 

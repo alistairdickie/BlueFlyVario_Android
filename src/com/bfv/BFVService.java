@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import com.bfv.model.Altitude;
+import com.bfv.model.KalmanFilteredAltitude;
 import com.bfv.model.LocationAltVar;
 
 
@@ -75,7 +76,7 @@ public class BFVService {
     private int mState;
 
     //key data
-    private ArrayList altitudes;
+    private KalmanFilteredAltitude altitude;
     private double temperature;
     private double battery;
 
@@ -100,7 +101,6 @@ public class BFVService {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
         mHandler = handler;
-        altitudes = new ArrayList();
 
 
     }
@@ -108,9 +108,9 @@ public class BFVService {
     public void setUpData() {
 //        Log.i("BFV", "setUpData");
         ArrayList<DataSource> dataSources = new ArrayList<DataSource>();
-        dataSources.add(getAltitude("Alt"));
-        dataSources.add(getAltitude("Alt").getVario("Var1"));
-        dataSources.add(getAltitude("Alt").getVario("Var2"));
+        dataSources.add(altitude);
+        dataSources.add(altitude.getKalmanVario());
+        dataSources.add(altitude.getDampedVario());
 
 
         SharedPreferences sharedPrefs = BFVSettings.sharedPrefs;
@@ -378,13 +378,9 @@ public class BFVService {
 
     public synchronized void updatePressure(int pressure, double time) {
 
-        if (altitudes != null) {
-            for (int i = 0; i < altitudes.size(); i++) {
-                Altitude altitude = (Altitude) altitudes.get(i);
-                altitude.addPressure((double) pressure, time);
 
-            }
-        }
+        altitude.addPressure((double) pressure, time);
+
         if (dataBuffer != null) {
             dataBuffer.addData();
         }
@@ -397,19 +393,13 @@ public class BFVService {
     }
 
 
-    public synchronized void addAltitude(Altitude altitude) {
-        altitudes.add(altitude);
+    public synchronized void setAltitude(KalmanFilteredAltitude altitude) {
+        this.altitude = altitude;
         this.setUpData();
     }
 
-    public synchronized Altitude getAltitude(String name) {
-        for (int i = 0; i < altitudes.size(); i++) {
-            Altitude altitude = (Altitude) altitudes.get(i);
-            if (altitude.getName().equals(name)) {
-                return altitude;
-            }
-        }
-        return null;
+    public synchronized KalmanFilteredAltitude getAltitude() {
+        return altitude;
     }
 
     public synchronized void updateTemperature(int temperature) {
