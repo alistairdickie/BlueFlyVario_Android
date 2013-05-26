@@ -38,6 +38,10 @@
 
     <string name="set_parameters">Edit parameters</string>
 
+    <!-- HardwareListActivity -->
+
+    <string name="set_hardware_parameters">Edit hardware settings</string>
+
     <!-- FileChooserListActivity -->
 
     <string name="file_chooser">Choose File</string>
