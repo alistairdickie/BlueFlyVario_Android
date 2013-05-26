@@ -21,14 +21,18 @@ package com.bfv;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
+import com.bfv.hardware.HardwareListActivity;
 import com.bfv.model.Vario;
 import com.bfv.view.VarioSurfaceView;
 
@@ -54,7 +58,49 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
         sharedPrefs.registerOnSharedPreferenceChangeListener(this);
         this.findPreference("default").setOnPreferenceClickListener(this);
         this.findPreference("about").setOnPreferenceClickListener(this);
+        Preference hardware = this.findPreference("hardware");
 
+
+        if (BlueFlyVario.blueFlyVario.getVarioService().getmState() == BFVService.STATE_CONNECTED || BlueFlyVario.blueFlyVario.getVarioService().getmState() == BFVService.STATE_CONNECTEDANDPRESSURE) {
+            hardware.setEnabled(true);
+        } else {
+            hardware.setEnabled(false);
+        }
+        hardware.setOnPreferenceClickListener(this);
+
+        boolean firstRun = this.getIntent().getBooleanExtra("firstRunDefault", false);
+        if (firstRun) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+
+            builder.setMessage("Default settings restored in this new version!")
+                    .setCancelable(true)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+
+
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+            resetDefaults();
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();    //To change body of overridden methods use File | Settings | File Templates.
+        Preference hardware = this.findPreference("hardware");
+        if (hardware != null) {
+            if (BlueFlyVario.blueFlyVario.getVarioService().getmState() == BFVService.STATE_CONNECTED || BlueFlyVario.blueFlyVario.getVarioService().getmState() == BFVService.STATE_CONNECTEDANDPRESSURE) {
+                hardware.setEnabled(true);
+            } else {
+                hardware.setEnabled(false);
+            }
+        }
 
     }
 
@@ -140,6 +186,7 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
 
 
     public boolean onPreferenceClick(Preference preference) {
+
         if (preference.getKey().equals("default")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -178,12 +225,12 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
 
 
             builder.setMessage("BlueFlyVario " + version + "  [" + versionCode + "]")
-                    .setCancelable(false)
+                    .setCancelable(true)
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
 
 
-                            finish();
+                            dialog.cancel();
                         }
 
 
@@ -192,6 +239,35 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
             alert.show();
 
             return true;
+
+        } else if (preference.getKey().equals("hardware")) {
+
+            if (BlueFlyVario.blueFlyVario.getVarioService().getHardwareVersion() < 6) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+
+                builder.setMessage("Hardware version: "
+                        + BlueFlyVario.blueFlyVario.getVarioService().getHardwareParameters().getHardwareVersion()
+                        + "\n\nSetting hardware parameters not supported on hardware versions earlier than 6")
+                        .setCancelable(true)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+
+
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+                return true;
+
+            } else {
+
+                Intent parameterIntent = new Intent(BlueFlyVario.blueFlyVario, HardwareListActivity.class);
+                BlueFlyVario.blueFlyVario.startActivity(parameterIntent);
+                return true;
+            }
 
         }
         return false;

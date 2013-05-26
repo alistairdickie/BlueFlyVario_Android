@@ -43,7 +43,7 @@ public class ConnectThread extends Thread {
 
         // Get a BluetoothSocket for a connection with the
         // given BluetoothDevice
-
+        // Log.i("BFV", "connectThread:" + device.getAddress());
 
         if (connectMethod == BFVService.CONNECT_NORMAL) {
             try {

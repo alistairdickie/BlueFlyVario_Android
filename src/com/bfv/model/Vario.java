@@ -123,7 +123,7 @@ public class Vario implements DataSource {
 
         }
 
-        //if(Math.abs(lastVar-var) > 0.1){  //todo change notice
+        //if(Math.abs(lastVar-var) > 0.1){
         this.notifyListeners(var);
         //}
 

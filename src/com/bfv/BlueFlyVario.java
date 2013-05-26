@@ -26,6 +26,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
@@ -48,6 +50,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
+import java.util.prefs.Preferences;
 
 public class BlueFlyVario extends MapActivity {
 
@@ -104,6 +107,7 @@ public class BlueFlyVario extends MapActivity {
 
     private MapViewManager mapViewManager;
     public boolean doubleBackToExitPressedOnce;
+    public boolean firstRun;
 
 
     @Override
@@ -117,6 +121,28 @@ public class BlueFlyVario extends MapActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         BFVSettings.sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+
+        //check first run
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        PackageInfo pInfo;
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
+            //if (true){
+            if (prefs.getLong("lastRunVersionCode", 0) < pInfo.versionCode) {
+                firstRun = true;
+
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putLong("lastRunVersionCode", pInfo.versionCode);
+                editor.commit();
+            } else {
+                firstRun = false;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+
+        }
+
 
         // Set up the window layout
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
@@ -577,8 +603,9 @@ public class BlueFlyVario extends MapActivity {
                 }
 
             case R.id.settings:
-                // Launch the DeviceListActivity to see devices and do scan
+
                 Intent settingsIntent = new Intent(this, BFVSettings.class);
+                settingsIntent.putExtra("firstRunDefault", firstRun);
                 startActivityForResult(settingsIntent, REQUEST_SETTINGS);
                 return true;
 

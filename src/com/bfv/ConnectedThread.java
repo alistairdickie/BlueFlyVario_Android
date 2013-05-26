@@ -35,8 +35,10 @@ public class ConnectedThread extends Thread {
     public static final int UPDATE_NONE = 0;
     public static final int UPDATE_PRS = 1;
     public static final int UPDATE_TMP = 2;
-    public static final int UPDATE_MSG = 3;
+    public static final int UPDATE_VER = 3;
     public static final int UPDATE_BAT = 4;
+    public static final int UPDATE_KEYS = 5;
+    public static final int UPDATE_VALUES = 6;
 
 
     private final BluetoothSocket mmSocket;
@@ -181,8 +183,26 @@ public class ConnectedThread extends Thread {
         } else if (split[0].equals("BFV")) {
 
 
-            this.lastUpdateType = UPDATE_MSG;
-            service.updateMessage(split[1]);
+            this.lastUpdateType = UPDATE_VER;
+            try {
+                int ver = Integer.parseInt(split[1]);
+                service.setHardwareVersion(ver);
+            } catch (NumberFormatException e) {
+                service.setHardwareVersion(0);
+            }
+
+
+        } else if (split[0].equals("BST")) {
+
+
+            this.lastUpdateType = UPDATE_KEYS;
+            service.updateHardwareSettingsKeys(line);
+
+        } else if (split[0].equals("SET")) {
+
+
+            this.lastUpdateType = UPDATE_VALUES;
+            service.updateHardwareSettingsValues(line);
 
         }
 

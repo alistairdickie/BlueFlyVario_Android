@@ -29,6 +29,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
+import com.bfv.hardware.HardwareParameters;
 import com.bfv.model.Altitude;
 import com.bfv.model.KalmanFilteredAltitude;
 import com.bfv.model.LocationAltVar;
@@ -75,6 +77,9 @@ public class BFVService {
     private ConnectedThread mConnectedThread;
     private int mState;
 
+    private HardwareParameters hardwareParameters;
+
+
     //key data
     private KalmanFilteredAltitude altitude;
     private double temperature;
@@ -88,6 +93,8 @@ public class BFVService {
     private Flight flight;
 
     private boolean hasPressure;
+
+    private int hardwareVersion;
 
 
     /**
@@ -131,6 +138,10 @@ public class BFVService {
 
         // Give the new state to the Handler so the UI Activity can update
         mHandler.obtainMessage(BlueFlyVario.MESSAGE_SERVICE_STATE_CHANGE, state, -1).sendToTarget();
+    }
+
+    public int getmState() {
+        return mState;
     }
 
     public void firstPressure() {
@@ -204,7 +215,7 @@ public class BFVService {
      * @param device The BluetoothDevice to connect
      */
     public synchronized void connect(BluetoothDevice device) {
-
+        //   Log.i("BFV", "connect:" + device.getAddress());
         if (mState == STATE_CONNECTED || mState == STATE_CONNECTEDANDPRESSURE) {
             return;
         }
@@ -287,10 +298,13 @@ public class BFVService {
             mConnectedThread = null;
         }
 
+        //hardwareParameters
+        hardwareParameters = new HardwareParameters(this);
 
         // Start the thread to manage the connection and perform transmissions
         mConnectedThread = new ConnectedThread(socket, this);
         mConnectedThread.start();
+
 
         //update the sharedPreferences with the last connected devices
         SharedPreferences sharedPref = BFVSettings.sharedPrefs;
@@ -431,6 +445,21 @@ public class BFVService {
 
     }
 
+    public synchronized void updateHardwareSettingsKeys(String line) {
+        if (hardwareParameters != null) {
+            hardwareParameters.updateHardwareSettingsKeys(line);
+        }
+
+
+    }
+
+    public synchronized void updateHardwareSettingsValues(String line) {
+        if (hardwareParameters != null) {
+            hardwareParameters.updateHardwareSettingsValues(line);
+        }
+
+    }
+
     public void setUpLocationManager() {
         bfvLocationManager = new BFVLocationManager(context, this, mHandler);
     }
@@ -477,6 +506,26 @@ public class BFVService {
 
     public Handler getmHandler() {
         return mHandler;
+    }
+
+    public HardwareParameters getHardwareParameters() {
+        return hardwareParameters;
+    }
+
+    public boolean sendConnectedHardwareMessage(String message) {
+        if (mConnectedThread != null) {
+            mConnectedThread.write(message.getBytes());
+            return true;
+        }
+        return false;
+    }
+
+    public int getHardwareVersion() {
+        return hardwareVersion;
+    }
+
+    public void setHardwareVersion(int hardwareVersion) {
+        this.hardwareVersion = hardwareVersion;
     }
 }
 
