@@ -36,6 +36,10 @@
                   android:label="@string/set_parameters"
                   android:theme="@android:style/Theme.Dialog"
                   android:configChanges="orientation|keyboardHidden"/>
+        <activity android:name=".hardware.HardwareListActivity"
+                  android:label="@string/set_hardware_parameters"
+                  android:theme="@android:style/Theme.Dialog"
+                  android:configChanges="orientation|keyboardHidden"/>
 
     </application>
 </manifest>
