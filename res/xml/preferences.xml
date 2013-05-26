@@ -300,6 +300,11 @@
                 android:summary="Restore all settings to the original values"
                 />
         <Preference
+                android:key="hardware"
+                android:title="Hardware Settings"
+                android:summary="Set parameters on the connected device"
+                />
+        <Preference
                 android:key="about"
                 android:title="About"
                 android:summary="Show information about this app"

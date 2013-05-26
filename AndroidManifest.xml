@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.bfv"
           android:versionCode="6"
-          android:versionName="0.5b(6)">
+          android:versionName="0.6b">
     <uses-sdk android:minSdkVersion="10"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>

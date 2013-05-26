@@ -50,8 +50,11 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
     public void onCreate(Bundle savedInstanceState) {
         //Log.e("BFV", "CREATE Settings");
         super.onCreate(savedInstanceState);
-        Context context = getApplicationContext();
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        if (sharedPrefs == null) {
+            Context context = getApplicationContext();
+            sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        }
 
 
         addPreferencesFromResource(R.xml.preferences);
@@ -71,21 +74,21 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
         boolean firstRun = this.getIntent().getBooleanExtra("firstRunDefault", false);
         if (firstRun) {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-
-            builder.setMessage("Default settings restored in this new version!")
-                    .setCancelable(true)
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-
-
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
-            resetDefaults();
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//
+//
+//            builder.setMessage("Default settings restored in this new version!")
+//                    .setCancelable(true)
+//                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int id) {
+//                            dialog.cancel();
+//                        }
+//
+//
+//                    });                        1556160 4821
+//            AlertDialog alert = builder.create();
+//            alert.show();
+            resetDefaults(false);
         }
 
     }
@@ -110,7 +113,7 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
         sharedPrefs.unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    public void resetDefaults() {
+    public void resetDefaults(boolean makeToast) {
 
 
         BlueFlyVario.blueFlyVario.getVarioService().getBfvLocationManager().setGpsAltUpdateFlag(false);
@@ -120,10 +123,28 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
         stopSetQNH = true;
         sharedPrefs.edit().clear().commit();
         PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
+
+        PackageInfo pInfo;
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
+            //if (true){
+            if (sharedPrefs.getLong("lastRunVersionCode", 0) < pInfo.versionCode) {
+
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putLong("lastRunVersionCode", pInfo.versionCode);
+                editor.commit();
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+
+        }
         //addPreferencesFromResource(R.xml.preferences);
 
-        Toast toast = Toast.makeText(this, "Default Settings Restored", Toast.LENGTH_SHORT);
-        toast.show();
+        if (makeToast) {
+            Toast toast = Toast.makeText(this, "Default Settings Restored", Toast.LENGTH_SHORT);
+            toast.show();
+
+        }
 
         //sharedPrefs.registerOnSharedPreferenceChangeListener(this);
         //this.findPreference("default").setOnPreferenceClickListener(this);
@@ -195,7 +216,7 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
                     .setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            resetDefaults();
+                            resetDefaults(true);
 
                             finish();
                         }

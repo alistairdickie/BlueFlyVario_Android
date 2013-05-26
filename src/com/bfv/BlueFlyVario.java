@@ -124,7 +124,7 @@ public class BlueFlyVario extends MapActivity {
 
 
         //check first run
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = BFVSettings.sharedPrefs;
         PackageInfo pInfo;
         try {
             pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
@@ -319,7 +319,7 @@ public class BlueFlyVario extends MapActivity {
 
     private void setupAltitudes() {
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPref = BFVSettings.sharedPrefs;
 
         double alt_setqnh = Double.valueOf(sharedPref.getString("alt_setqnh", "1013.25")) * 100;
         double alt_damp = Double.valueOf(sharedPref.getString("alt_damp", "0.05"));
