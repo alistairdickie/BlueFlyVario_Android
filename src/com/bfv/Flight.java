@@ -116,7 +116,19 @@ public class Flight {
         }
     }
 
+    public double getFlightAltFromStart() {
+        if (locations.size() > 0) {
+            double startAlt = locations.get(0).getBaroAlt();
+            double currentAlt = locations.get(locations.size() - 1).getBaroAlt();
+            return currentAlt - startAlt;
+        } else {
+            return 0.0;
+        }
+    }
+
     public boolean isExternalStorageAvailable() {
         return mExternalStorageAvailable;
     }
+
+
 }

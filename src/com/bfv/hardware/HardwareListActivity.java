@@ -25,10 +25,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import com.bfv.*;
@@ -160,13 +163,16 @@ public class HardwareListActivity extends Activity {
         switch (type) {
             case (HardwareParameter.TYPE_DOUBLE):
                 final EditText inputDouble = new EditText(this);
+                inputDouble.setSingleLine();
+
                 inputDouble.setKeyListener(new DigitsKeyListener(true, true));
                 final String nameDouble = parameter.getName();
                 inputDouble.setText(parameter.getValue());
 
+
                 new AlertDialog.Builder(this)
                         .setTitle("Edit Decimal Parameter")
-                        .setMessage(parameter.getName() + "\n\n" + parameter.getMessage(true))
+                        .setMessage(parameter.getName() + ": " + parameter.getMessage(true))
                         .setView(inputDouble)
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -184,13 +190,14 @@ public class HardwareListActivity extends Activity {
                 break;
             case (HardwareParameter.TYPE_INT):
                 final EditText inputInt = new EditText(this);
+                inputInt.setSingleLine();
                 inputInt.setKeyListener(new DigitsKeyListener(false, false));
                 final String nameInt = parameter.getName();
                 inputInt.setText(parameter.getValue());
 
                 new AlertDialog.Builder(this)
                         .setTitle("Edit Integer Parameter")
-                        .setMessage(parameter.getName() + "\n\n" + parameter.getMessage(true))
+                        .setMessage(parameter.getName() + ": " + parameter.getMessage(true))
                         .setView(inputInt)
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -218,7 +225,7 @@ public class HardwareListActivity extends Activity {
 
                 new AlertDialog.Builder(this)
                         .setTitle("Edit Boolean Parameter")
-                        .setMessage(parameter.getName() + "\n\n" + parameter.getMessage(false))
+                        .setMessage(parameter.getName() + ": " + parameter.getMessage(false))
                         .setView(check)
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -242,7 +249,7 @@ public class HardwareListActivity extends Activity {
 
                 new AlertDialog.Builder(this)
                         .setTitle("Edit Parameter")
-                        .setMessage(parameter.getName() + "\n\n" + parameter.getMessage(false))
+                        .setMessage(parameter.getName() + ": " + parameter.getMessage(false))
                         .setSingleChoiceItems(names, item, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int item) {
 

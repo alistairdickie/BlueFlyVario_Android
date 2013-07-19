@@ -23,6 +23,9 @@ import android.graphics.*;
 public class ViewUtil {
 
     private static Rect textBounds = new Rect();
+    private static int r;
+    private static int g;
+    private static int b;
 
 
     public static void addTextBubble(String text, Canvas c, Paint p, float xCenter, float yCenter) {
@@ -59,18 +62,18 @@ public class ViewUtil {
 
     public static int getColor(double var, int alpha) {
         if (var >= 0) {
-            int g = 255;
-            int b = 55;
-            int r = (int) (255 - (var * 200));
+            g = 255;
+            b = 55;
+            r = (int) (255 - (var * 200));
             if (r < 55) {
                 r = 55;
             }
             return Color.argb(alpha, r, g, b);
 
         } else {
-            int g = (int) (255 + (var * 200));
-            int b = 55;
-            int r = 255;
+            g = (int) (255 + (var * 200));
+            b = 55;
+            r = 255;
             if (g < 55) {
                 g = 55;
             }

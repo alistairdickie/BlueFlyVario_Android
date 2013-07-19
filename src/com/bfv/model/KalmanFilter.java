@@ -35,6 +35,12 @@ public class KalmanFilter {
     // The variance of the acceleration noise input in the system model.
     private double var_accel;
 
+    //calculation variables
+    double y;
+    double s_inv;
+    double k_abs;
+    double k_vel;
+
     // Constructor. Assumes a variance of 1.0 for the system model's
     // acceleration noise input, in units per second squared.
     public KalmanFilter() {
@@ -92,10 +98,10 @@ public class KalmanFilter {
         p_vel_vel += var_accel * dt * dt;
 
         // Update step.
-        double y = z_abs - x_abs;  // Innovation.
-        double s_inv = 1. / (p_abs_abs + var_z_abs);  // Innovation precision.
-        double k_abs = p_abs_abs * s_inv;  // Kalman gain
-        double k_vel = p_abs_vel * s_inv;
+        y = z_abs - x_abs;  // Innovation.
+        s_inv = 1. / (p_abs_abs + var_z_abs);  // Innovation precision.
+        k_abs = p_abs_abs * s_inv;  // Kalman gain
+        k_vel = p_abs_vel * s_inv;
         // Update state estimate.
         x_abs += k_abs * y;
         x_vel += k_vel * y;

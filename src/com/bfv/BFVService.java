@@ -18,6 +18,9 @@
 
 package com.bfv;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -26,9 +29,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.os.*;
 import android.util.Log;
 import com.bfv.hardware.HardwareParameters;
 import com.bfv.model.Altitude;
@@ -73,7 +74,7 @@ public class BFVService {
     private final BluetoothAdapter mAdapter;
     private final Handler mHandler;
 
-    private ConnectThread mConnectThread;
+    private ConnectTask mConnectTask;
     private ConnectedThread mConnectedThread;
     private int mState;
 
@@ -112,8 +113,8 @@ public class BFVService {
 
     }
 
-    public void setUpData() {
-//        Log.i("BFV", "setUpData");
+    public synchronized void setUpData() {
+        Log.i("BFV", "setUpData");
         ArrayList<DataSource> dataSources = new ArrayList<DataSource>();
         dataSources.add(altitude);
         dataSources.add(altitude.getKalmanVario());
@@ -189,9 +190,9 @@ public class BFVService {
         return mState;
     }
 
-    public void setConnectThread(ConnectThread mConnectThread) {
-        this.mConnectThread = mConnectThread;
-    }
+//    public void setConnectTask(ConnectTask mConnectTask) {
+//        this.mConnectTask = mConnectTask;
+//    }
 
 
     //    /**
@@ -222,9 +223,9 @@ public class BFVService {
 
         // Cancel any thread attempting to make a connection
         if (mState == STATE_CONNECTING) {
-            if (mConnectThread != null) {
-                mConnectThread.cancel();
-                mConnectThread = null;
+            if (mConnectTask != null) {
+                mConnectTask.cancel(true);
+                mConnectTask = null;
             }
         }
 
@@ -234,29 +235,21 @@ public class BFVService {
             mConnectedThread = null;
         }
 
-        int connectMethod = Integer.valueOf(BFVSettings.sharedPrefs.getString("bluetooth_connectMethod", CONNECT_REFLECT + ""));
+        //  int connectMethod = Integer.valueOf(BFVSettings.sharedPrefs.getString("bluetooth_connectMethod", CONNECT_REFLECT + ""));
         // Start the thread to connect with the given device
-        mConnectThread = new ConnectThread(device, connectMethod, this);
-        mConnectThread.start();
+        mConnectTask = new ConnectTask();
+        mConnectTask.execute(device);
+
         setState(STATE_CONNECTING);
     }
 
     public synchronized void disconnect() {
         // Cancel any thread attempting to make a connection
         if (mState == STATE_CONNECTING) {
-            if (mConnectThread != null) {
-                mConnectThread.cancel();
-//                boolean retry = true;
-//                while(retry){
-//                    try {
-//                        mConnectThread.join();
-//                    } catch (InterruptedException e) {
-//                        retry = false;
-//
-//                    }
-//                }
+            if (mConnectTask != null) {
+                mConnectTask.cancel(true);
 
-                mConnectThread = null;
+                mConnectTask = null;
             }
         }
 
@@ -287,10 +280,10 @@ public class BFVService {
 
 
         // Cancel the thread that completed the connection
-        if (mConnectThread != null) {
-            mConnectThread.cancel();
-            mConnectThread = null;
-        }
+//        if (mConnectTask != null) {
+//            mConnectTask.cancel(true);
+//            mConnectTask = null;
+//        }
 
         // Cancel any thread currently running a connection
         if (mConnectedThread != null) {
@@ -303,6 +296,7 @@ public class BFVService {
 
         // Start the thread to manage the connection and perform transmissions
         mConnectedThread = new ConnectedThread(socket, this);
+        mConnectedThread.setPriority(Thread.MAX_PRIORITY);
         mConnectedThread.start();
 
 
@@ -328,9 +322,9 @@ public class BFVService {
      */
     public synchronized void stop() {
 
-        if (mConnectThread != null) {
-            mConnectThread.cancel();
-            mConnectThread = null;
+        if (mConnectTask != null) {
+            mConnectTask.cancel(true);
+            mConnectTask = null;
         }
         if (mConnectedThread != null) {
             mConnectedThread.cancel();
@@ -363,6 +357,8 @@ public class BFVService {
     public void connectionFailed(String s) {
 
         this.setState(STATE_NONE);
+
+        Log.i(BFVService.TAG, s);
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(BlueFlyVario.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
@@ -526,6 +522,176 @@ public class BFVService {
 
     public void setHardwareVersion(int hardwareVersion) {
         this.hardwareVersion = hardwareVersion;
+    }
+
+    private class ConnectTask extends AsyncTask<BluetoothDevice, Void, Void> {
+        String errorMessage;
+        BluetoothDevice device;
+        BluetoothSocket socket;
+
+
+        protected Void doInBackground(BluetoothDevice... devices) {
+            device = devices[0];
+            //Log.i(BFVService.TAG, "address " + device.getAddress());
+            //Log.i(BFVService.TAG, "name " + device.getName());
+            //Log.i(BFVService.TAG, "class " + device.getBluetoothClass().toString());
+            //Log.i(BFVService.TAG, "bondstate " + device.getBondState());
+
+            //try uuidLookup - sometimes it might help for api v14 or later.
+            uuidLookup(device);
+
+            int connectMethod = Integer.valueOf(BFVSettings.sharedPrefs.getString("bluetooth_connectMethod", CONNECT_REFLECT + ""));
+            //Log.i(BFVService.TAG, "connectMethod " + connectMethod);
+
+            if (connectMethod == BFVService.CONNECT_NORMAL) {  //this should be the default
+                try {
+                    //Log.i(BFVService.TAG, "Try create secure");
+                    socket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                    boolean success = tryConnectToSocket(socket);
+                    if (success) {
+                        return null;
+                    } else {
+                        //Log.i(BFVService.TAG, "Try create insecure");
+                        socket = device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
+                    }
+                    success = tryConnectToSocket(socket);
+
+                    if (!success) {
+                        connectionFailed("Socket: " + errorMessage);
+                    }
+
+                    return null;
+
+
+                } catch (IOException e) {
+
+                    connectionFailed("CS: " + e.getLocalizedMessage());
+                }
+            }
+
+            if (connectMethod == BFVService.CONNECT_REFLECT) {
+                try {
+                    //Log.i(BFVService.TAG, "Try create from reflect");
+                    Method m;
+                    m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
+                    socket = (BluetoothSocket) m.invoke(device, Integer.valueOf(1));
+                    boolean success = tryConnectToSocket(socket);
+                    if (!success) {
+                        connectionFailed("Reflect Socket: " + errorMessage);
+                    }
+                    return null;
+                } catch (NoSuchMethodException e) {
+                    connectionFailed("RCS1: " + e.getLocalizedMessage());
+                } catch (IllegalAccessException e) {
+                    connectionFailed("RCS2: " + e.getLocalizedMessage());
+                } catch (InvocationTargetException e) {
+                    connectionFailed("RCS3: " + e.getLocalizedMessage());
+                }
+
+            }
+            return null;
+        }
+
+        private boolean tryConnectToSocket(BluetoothSocket socket) {
+            if (isCancelled()) {
+                Log.i(BFVService.TAG, "tryConectToSocket Cancelled ");
+                return false;
+            }
+            Log.i(BFVService.TAG, "Try cancelDiscovery");
+            getAdapter().cancelDiscovery();
+            try {
+                // This is a blocking call and will only return on a
+                // successful connection or an exception
+                Log.i(BFVService.TAG, "Try connect");
+                socket.connect();
+                Log.i(BFVService.TAG, "Passed Connect");
+                connected(socket, device);
+                return true;
+            } catch (IOException e) {
+
+                // Close the socket
+                try {
+                    socket.close();
+                } catch (IOException e2) {
+                    Log.e(BFVService.TAG, "unable to close() socket during connection failure", e2);
+                }
+                errorMessage = e.getLocalizedMessage();
+
+            }
+            return false;
+
+        }
+
+        private boolean uuidLookup(BluetoothDevice device) {
+
+            //Log.i(BFVService.TAG, "Finding UUIDs");
+            try {
+                Method m = device.getClass().getMethod("getUuids", null);
+                ParcelUuid[] uuids = (ParcelUuid[]) m.invoke(device, null);
+                if (uuids == null) {
+                    //Log.i(BFVService.TAG, "Null UUIDs");
+                    //return false;
+                }
+
+                if (uuids != null) {
+                    for (int i = 0; i < uuids.length; i++) {
+                        ParcelUuid uuid = uuids[i];
+                        Log.i(BFVService.TAG, uuid.toString());
+                        if (uuid.getUuid().compareTo(MY_UUID) == 0) {
+                            //Log.i(BFVService.TAG, "Contains SPP UUID");
+                            return true;
+                        }
+
+                    }
+                }
+
+
+                //Log.i(BFVService.TAG, "SPP UUID Not found");
+                //Log.i(BFVService.TAG, "Invoking fetch");
+                Method fetch = device.getClass().getMethod("fetchUuidsWithSdp", null);
+                fetch.invoke(device, null);
+                return false;
+
+
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            Log.i(BFVService.TAG, "Finding Uuids could not be invoked");
+            return false;
+
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();    //To change body of overridden methods use File | Settings | File Templates.
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);    //To change body of overridden methods use File | Settings | File Templates.
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);    //To change body of overridden methods use File | Settings | File Templates.
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();    //To change body of overridden methods use File | Settings | File Templates.
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException e) {
+                Log.e(BFVService.TAG, "close() of connect socket failed", e);
+            }
+        }
     }
 }
 

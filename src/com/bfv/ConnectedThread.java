@@ -78,7 +78,7 @@ public class ConnectedThread extends Thread {
         try {
             tmpIn = socket.getInputStream();
             tmpOut = socket.getOutputStream();
-            tmpReader = new BufferedReader(new InputStreamReader(tmpIn));
+            tmpReader = new BufferedReader(new InputStreamReader(tmpIn), 256);
         } catch (IOException e) {
             Log.e(BFVService.TAG, "temp sockets not created", e);
         }
@@ -86,6 +86,7 @@ public class ConnectedThread extends Thread {
 
         mmOutStream = tmpOut;
         mmReader = tmpReader;
+
 
         chargeFromVolts = new PiecewiseLinearFunction(new Point2d(3.6, 0.0));
         chargeFromVolts.addNewPoint(new Point2d(3.682, 0.032));
@@ -143,67 +144,71 @@ public class ConnectedThread extends Thread {
 
     public void handleLine(String line) {
 
-        if (line == null || service == null) {
+        try {
+            if (line == null || service == null) {
+                return;
+            }
+            String[] split = line.split(" ");
+            if (split[0] == null) {
+                return;
+            }
+
+            if (split[0].equals("PRS")) {
+
+                if (this.lastUpdateType == UPDATE_BAT) {
+                    time = 0.04;
+                } else {
+                    time = 0.02;
+                }
+
+                this.lastUpdateType = UPDATE_PRS;
+
+
+                service.updatePressure(Integer.parseInt(split[1], 16), time);
+                if (!firstPressure) {
+                    service.firstPressure();
+                    firstPressure = true;
+                }
+
+
+            } else if (split[0].equals("TMP")) {
+
+                this.lastUpdateType = UPDATE_TMP;
+                service.updateTemperature(Integer.parseInt(split[1]));
+
+            } else if (split[0].equals("BAT")) {
+
+                this.lastUpdateType = UPDATE_BAT;
+                int bat = Integer.parseInt(split[1], 16);     //bat is in mV
+                service.updateBattery(chargeFromVolts.getValue(bat / 1000.0));
+
+            } else if (split[0].equals("BFV")) {
+
+
+                this.lastUpdateType = UPDATE_VER;
+                try {
+                    int ver = Integer.parseInt(split[1]);
+                    service.setHardwareVersion(ver);
+                } catch (NumberFormatException e) {
+                    service.setHardwareVersion(0);
+                }
+
+
+            } else if (split[0].equals("BST")) {
+
+
+                this.lastUpdateType = UPDATE_KEYS;
+                service.updateHardwareSettingsKeys(line);
+
+            } else if (split[0].equals("SET")) {
+
+
+                this.lastUpdateType = UPDATE_VALUES;
+                service.updateHardwareSettingsValues(line);
+
+            }
+        } catch (NumberFormatException e) {
             return;
-        }
-        String[] split = line.split(" ");
-        if (split[0] == null) {
-            return;
-        }
-
-        if (split[0].equals("PRS")) {
-
-            if (this.lastUpdateType == UPDATE_BAT) {
-                time = 0.04;
-            } else {
-                time = 0.02;
-            }
-
-            this.lastUpdateType = UPDATE_PRS;
-
-
-            service.updatePressure(Integer.parseInt(split[1], 16), time);
-            if (!firstPressure) {
-                service.firstPressure();
-                firstPressure = true;
-            }
-
-
-        } else if (split[0].equals("TMP")) {
-
-            this.lastUpdateType = UPDATE_TMP;
-            service.updateTemperature(Integer.parseInt(split[1]));
-
-        } else if (split[0].equals("BAT")) {
-
-            this.lastUpdateType = UPDATE_BAT;
-            int bat = Integer.parseInt(split[1], 16);     //bat is in mV
-            service.updateBattery(chargeFromVolts.getValue(bat / 1000.0));
-
-        } else if (split[0].equals("BFV")) {
-
-
-            this.lastUpdateType = UPDATE_VER;
-            try {
-                int ver = Integer.parseInt(split[1]);
-                service.setHardwareVersion(ver);
-            } catch (NumberFormatException e) {
-                service.setHardwareVersion(0);
-            }
-
-
-        } else if (split[0].equals("BST")) {
-
-
-            this.lastUpdateType = UPDATE_KEYS;
-            service.updateHardwareSettingsKeys(line);
-
-        } else if (split[0].equals("SET")) {
-
-
-            this.lastUpdateType = UPDATE_VALUES;
-            service.updateHardwareSettingsValues(line);
-
         }
 
 

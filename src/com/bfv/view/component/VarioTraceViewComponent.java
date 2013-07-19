@@ -85,9 +85,9 @@ public class VarioTraceViewComponent extends BFVViewComponent {
 
         DataBuffer buffer = view.service.getDataBuffer();
         int size = buffer.getBufferSize();
-        varBufferData = buffer.getData(traceVar, varBufferData);
+        varBufferData = buffer.getData(traceVar);
 //        varBufferData2 = buffer.getData(scaleVar, varBufferData2);
-        altBufferData = buffer.getData(view.alt, altBufferData);
+        altBufferData = buffer.getData(view.alt);
 
         double[] varData = varBufferData.getData();
 //        double[] varData2 = varBufferData2.getData();

@@ -107,7 +107,6 @@ public class BlueFlyVario extends MapActivity {
 
     private MapViewManager mapViewManager;
     public boolean doubleBackToExitPressedOnce;
-    public boolean firstRun;
 
 
     @Override
@@ -124,19 +123,15 @@ public class BlueFlyVario extends MapActivity {
 
 
         //check first run
-        SharedPreferences prefs = BFVSettings.sharedPrefs;
+
         PackageInfo pInfo;
         try {
             pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
             //if (true){
-            if (prefs.getLong("lastRunVersionCode", 0) < pInfo.versionCode) {
-                firstRun = true;
+            if (BFVSettings.sharedPrefs.getLong("lastRunVersionCode", 0) < pInfo.versionCode) {
 
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putLong("lastRunVersionCode", pInfo.versionCode);
-                editor.commit();
-            } else {
-                firstRun = false;
+                BFVSettings.setDefaultValues(this);
+                firstRun();
             }
         } catch (PackageManager.NameNotFoundException e) {
 
@@ -196,6 +191,48 @@ public class BlueFlyVario extends MapActivity {
         layout.addView(mapViewManager.getMap());
         layout.addView(varioSurface);
 
+        // If BT is not on, request that it be enabled.
+
+        if (mBluetoothAdapter.isEnabled()) {
+
+            tryAutoConnect();
+
+
+        }
+    }
+
+    public void firstRun() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        String version = "";
+        int versionCode = -1;
+        try {
+            PackageInfo pInfo = BlueFlyVario.blueFlyVario.getPackageManager().getPackageInfo(getPackageName(), 0);
+            version = pInfo.versionName;
+            versionCode = pInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+
+        }
+
+        builder.setTitle("BlueFlyVario " + version + "  [" + versionCode + "]")
+                .setMessage("Thank you for installing this new version.\nDefault Settings have been enabled.")
+                .setCancelable(true)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+
+                        dialog.cancel();
+                    }
+
+
+                });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+
+        TextView messageText = (TextView) alert.findViewById(android.R.id.message);
+        messageText.setGravity(Gravity.CENTER);
+
 
     }
 
@@ -207,17 +244,9 @@ public class BlueFlyVario extends MapActivity {
     @Override
     public void onStart() {
         super.onStart();
-        if (D) Log.e(TAG, "++ ON START ++");
+        Log.e(TAG, "++ ON START ++");
 
 
-        // If BT is not on, request that it be enabled.
-
-        if (mBluetoothAdapter.isEnabled()) {
-
-            tryAutoConnect();
-
-
-        }
     }
 
     @Override
@@ -288,6 +317,7 @@ public class BlueFlyVario extends MapActivity {
             varioSurface.onDestroy();
             varioSurface = null;
         }
+
     }
 
     @Override
@@ -605,7 +635,7 @@ public class BlueFlyVario extends MapActivity {
             case R.id.settings:
 
                 Intent settingsIntent = new Intent(this, BFVSettings.class);
-                settingsIntent.putExtra("firstRunDefault", firstRun);
+                //   settingsIntent.putExtra("firstRunDefault", firstRun);
                 startActivityForResult(settingsIntent, REQUEST_SETTINGS);
                 return true;
 

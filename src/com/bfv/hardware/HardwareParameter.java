@@ -179,7 +179,7 @@ public class HardwareParameter {
     public String getMessage(boolean includeMinMax) {
         if (message != null) {
             if (includeMinMax) {
-                return message + "\n\n" + "Min=" + getMinValue() + " : Max=" + getMaxValue();
+                return message + "\n" + "Min=" + getMinValue() + " : Max=" + getMaxValue();
             } else {
                 return message;
             }

@@ -138,6 +138,7 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
 
     public void scheduleSetUpData() {
+        Log.i("BFV", "ScheduleSetUpData " + running);
         if (!running) {
             service.setUpData();
         } else {
@@ -520,21 +521,31 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
 
         Canvas c;
+        Rect r;
         Paint paint = new Paint();
         paint.setAntiAlias(true);
 
         //fps stuff
         double timeavg = 0.0;
         long last = System.nanoTime();
+        long current;
+        double s;
+        double targetTime;
+        double sleepTime;
+        int fps_limit = Integer.valueOf(BFVSettings.sharedPrefs.getString("fps_limit", "30"));
+
+        BFVViewPage viewPage;
+        ArrayList<BFVViewComponent> components;
 
 
         while (running) {
             //fps stuff
-            long current = System.nanoTime();
-            double s = (current - last) / 1000000000.0;
-            timeavg = 0.05 * s + 0.95 * timeavg;
+            current = System.nanoTime();
+            s = (current - last) / 1000000000.0;
+            timeavg = 0.1 * s + 0.9 * timeavg; //filter the time to get average time
             fps = (1.0 / timeavg);
             last = current;
+
 
             if (scheduledSetUpData) {
                 service.setUpData();
@@ -550,15 +561,15 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
                 c = surfaceHolder.lockCanvas();
 
-                Rect r = surfaceHolder.getSurfaceFrame();
+                r = surfaceHolder.getSurfaceFrame();
 
                 if (r != null) {
                     frame = new Rect(r);
                     if (layoutResizeOrientationChangeFlag && oldFrame.width() != frame.width()) {
 
 
-                        BFVViewPage viewPage = viewPages.get(currentView);
-                        ArrayList<BFVViewComponent> components = viewPage.getViewComponents();
+                        viewPage = viewPages.get(currentView);
+                        components = viewPage.getViewComponents();
                         for (int j = 0; j < components.size(); j++) {
                             BFVViewComponent viewComponent = components.get(j);
                             viewComponent.scaleComponent((double) frame.width() / (double) oldFrame.width(), (double) frame.height() / (double) oldFrame.height());
@@ -576,12 +587,32 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
                 c.drawColor(0, PorterDuff.Mode.CLEAR); //clear canvas with transparant background
 
                 if (viewPages.size() > 0 && currentView >= 0 && currentView < viewPages.size()) {
-                    BFVViewPage viewPage = viewPages.get(currentView);
+                    viewPage = viewPages.get(currentView);
                     viewPage.addToCanvas(c, paint);
                 }
 
 
                 surfaceHolder.unlockCanvasAndPost(c);
+            }
+
+
+            if (fps > fps_limit) {//do some sleeping to slow down rendering.
+                current = System.nanoTime();
+                double renderTime = (current - last) / 1000000000.0;
+                targetTime = 1.0 / fps_limit;
+                sleepTime = (targetTime - renderTime);
+
+                if (sleepTime > 0.0) {
+                    // Log.i("BFV", "time," + targetTime + "," + timeavg + "," + sleepTime);
+                    try {
+                        Thread.sleep((int) (sleepTime * 1000.0));
+                    } catch (InterruptedException e) {
+                        //e.printStackTrace();
+                    }
+
+                }
+
+
             }
 
         }

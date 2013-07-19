@@ -45,6 +45,7 @@ public class FieldManager {
     public static final int FIELD_QNH = 15;
     public static final int FIELD_FLIGHT_TIME = 16;
     public static final int FIELD_FLIGHT_DISTANCE = 17;
+    public static final int FIELD_FLIGHT_ALT = 18;
 
 
     private VarioSurfaceView surfaceView;
@@ -138,6 +139,10 @@ public class FieldManager {
         field.addUnits("mi", 0.000621371192);
         field.addUnits("nm", 0.000539956803);
         field.setDefaultMultiplierIndex(1);
+        fields.add(field);
+
+        field = new Field(FIELD_FLIGHT_ALT, "flightAltitude", "0.0", "Flight Altitude", "m");
+        field.addUnits("ft", 3.2808399);
         fields.add(field);
 
 
@@ -278,6 +283,13 @@ public class FieldManager {
             case FIELD_FLIGHT_DISTANCE:
                 if (varioService.getFlight() != null) {
                     value = varioService.getFlight().getFlightDistanceFromStart();
+                } else {
+                    return "--";
+                }
+                break;
+            case FIELD_FLIGHT_ALT:
+                if (varioService.getFlight() != null) {
+                    value = varioService.getFlight().getFlightAltFromStart();
                 } else {
                     return "--";
                 }

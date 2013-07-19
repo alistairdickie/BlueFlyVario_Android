@@ -68,9 +68,7 @@ public class KalmanFilteredVario implements DataSource {
             return;
         }
         for (int i = 0; i < varioChangeListeners.size(); i++) {
-            VarioChangeListener varioChangeListener = varioChangeListeners.get(i);
-
-            varioChangeListener.varioChanged(changedVar);
+            varioChangeListeners.get(i).varioChanged(changedVar);
 
         }
 

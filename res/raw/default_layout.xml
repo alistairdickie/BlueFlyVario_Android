@@ -102,6 +102,10 @@
                               lineColor="#ffffffff" backColor="#ff000000" label="Flight Distance: km" labelSize="14.0"
                               valueSize="38.0" labelAlignment="1" valueAlignment="0" labelColor="#ffffffff"
                               valueColor="#ff00ff00" fieldUnits="1" valueDecimialFormat="#0.000"/>
+        <Field_flightAltitude top="628.0" right="239.0" bottom="688.0" left="1/0" lineWidth="1.0" cornerRadius="3.0"
+                              lineColor="#ffffffff" backColor="#ff000000" label="Flight Altitude: m" labelSize="14.0"
+                              valueSize="38.0" labelAlignment="1" valueAlignment="0" labelColor="#ffffffff"
+                              valueColor="#ff00ff00" fieldUnits="1" valueDecimialFormat="#0.0"/>
     </BFVViewPage>
     <BFVViewPage backColor="#00000000" frameWidth="480" frameHeight="724" orientation="1" drawMap="true"
                  autoPanMap="true" mapSatelliteMode="false" mapZoomLevel="8">

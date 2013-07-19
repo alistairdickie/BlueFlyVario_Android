@@ -88,6 +88,7 @@ public class BFVLocationManager implements LocationListener {
 
     private WindCalculator windCalculator;
 
+
     public BFVLocationManager(Context context, BFVService bfvService, Handler mHandler) {
         this.context = context;
         this.bfvService = bfvService;
@@ -156,7 +157,7 @@ public class BFVLocationManager implements LocationListener {
 
     public void maybeAskEnableGPS() {
 
-        boolean location_askEnableGPS = BFVSettings.sharedPrefs.getBoolean("location_askEnableGPS", true);
+        boolean location_askEnableGPS = BFVSettings.sharedPrefs.getBoolean("location_askEnableGPS", false);
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER) && location_askEnableGPS) {
 

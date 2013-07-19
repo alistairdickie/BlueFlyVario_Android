@@ -45,6 +45,26 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
 
     public static boolean stopSetQNH = false;
 
+    public static void setDefaultValues(Context context) {
+        sharedPrefs.edit().clear().commit();
+        PreferenceManager.setDefaultValues(context, R.xml.preferences, true);
+
+        PackageInfo pInfo;
+        try {
+            pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+
+            if (sharedPrefs.getLong("lastRunVersionCode", 0) < pInfo.versionCode) {
+
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putLong("lastRunVersionCode", pInfo.versionCode);
+                editor.commit();
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+
+        }
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,26 +91,6 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
         }
         hardware.setOnPreferenceClickListener(this);
 
-        boolean firstRun = this.getIntent().getBooleanExtra("firstRunDefault", false);
-        if (firstRun) {
-
-//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//
-//
-//            builder.setMessage("Default settings restored in this new version!")
-//                    .setCancelable(true)
-//                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int id) {
-//                            dialog.cancel();
-//                        }
-//
-//
-//                    });                        1556160 4821
-//            AlertDialog alert = builder.create();
-//            alert.show();
-            resetDefaults(false);
-        }
-
     }
 
     @Override
@@ -113,6 +113,7 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
         sharedPrefs.unregisterOnSharedPreferenceChangeListener(this);
     }
 
+
     public void resetDefaults(boolean makeToast) {
 
 
@@ -121,24 +122,8 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
 
         //sharedPrefs.unregisterOnSharedPreferenceChangeListener(this);
         stopSetQNH = true;
-        sharedPrefs.edit().clear().commit();
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
 
-        PackageInfo pInfo;
-        try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
-            //if (true){
-            if (sharedPrefs.getLong("lastRunVersionCode", 0) < pInfo.versionCode) {
-
-                SharedPreferences.Editor editor = sharedPrefs.edit();
-                editor.putLong("lastRunVersionCode", pInfo.versionCode);
-                editor.commit();
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-
-
-        }
-        //addPreferencesFromResource(R.xml.preferences);
+        setDefaultValues(BlueFlyVario.blueFlyVario);
 
         if (makeToast) {
             Toast toast = Toast.makeText(this, "Default Settings Restored", Toast.LENGTH_SHORT);

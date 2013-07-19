@@ -48,6 +48,9 @@ public class BFVViewPage implements ParamatizedComponent {  //extending BFVViewC
     private boolean mapSatelliteMode;
     private int mapZoomLevel;
 
+    private BFVViewComponent draging;
+    private BFVViewComponent viewComponent;
+
 
     public BFVViewPage(RectF pageFrame, VarioSurfaceView surfaceView) {
         //super(new RectF(), surfaceView);
@@ -121,9 +124,9 @@ public class BFVViewPage implements ParamatizedComponent {  //extending BFVViewC
         canvas.drawColor(backColor);
 
 
-        BFVViewComponent draging = null;
+        draging = null;
         for (int i = 0; i < viewComponents.size(); i++) {
-            BFVViewComponent viewComponent = viewComponents.get(i);
+            viewComponent = viewComponents.get(i);
             if (!viewComponent.isDraging()) {
                 viewComponent.addToCanvas(canvas, paint);
                 viewComponent.finished(canvas);

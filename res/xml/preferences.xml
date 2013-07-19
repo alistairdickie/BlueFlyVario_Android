@@ -112,7 +112,7 @@
                     android:summary="The size of the Vario buffer display in measurements"
                     android:dialogTitle="Vario Buffer Size"
                     android:dialogMessage="The size of the Vario buffer display in measurements. Use with buffer rate. The time of the display in seconds is 'Buffer Size' / 50 x 'Buffer Rate'"
-                    android:defaultValue="600"
+                    android:defaultValue="300"
                     android:numeric="integer"/>
             <EditTextPreference
                     android:key="display_varioBufferRate"
@@ -122,6 +122,15 @@
                     android:dialogMessage="The rate at which vario measurements are made from the pressure stream for display purposes. 3 means that 1 in 3 pressure readings are used as measurements in the vario data buffer. The time of the display in seconds is 'Buffer Size' / 50 x 'Buffer Rate' "
                     android:defaultValue="10"
                     android:numeric="integer"
+                    />
+            <EditTextPreference
+                    android:key="fps_limit"
+                    android:title="FPS Limit"
+                    android:summary="Limits the FPS of the main draw screen. Slow the FPS for old devices"
+                    android:dialogMessage="Limits the FPS of the main draw screen. Slow the FPS for old devices"
+                    android:defaultValue="20"
+                    android:numeric="integer"
+
                     />
 
         </PreferenceScreen>
@@ -133,7 +142,7 @@
                     android:key="location_askEnableGPS"
                     android:title="Enable GPS"
                     android:summary="Ask me if you want GPS to be enabled"
-                    android:defaultValue="true"
+                    android:defaultValue="false"
 
                     />
 
@@ -169,7 +178,7 @@
                     android:dialogTitle="Bluetooth connect method"
                     android:entries="@array/bluetoothConnectEntries"
                     android:entryValues="@array/bluetoothConnectValues"
-                    android:defaultValue="1"
+                    android:defaultValue="0"
                     />
         </PreferenceScreen>
 

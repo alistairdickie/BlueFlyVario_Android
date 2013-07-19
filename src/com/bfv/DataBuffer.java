@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 public class DataBuffer {
     private ArrayList<DataSource> dataSources;
-    private ArrayList<double[]> data;
+    private ArrayList<BufferData> data;
     private int bufferSize;
     private int position;
     private boolean full;
@@ -43,9 +43,9 @@ public class DataBuffer {
     }
 
     public synchronized void initBuffer() {
-        data = new ArrayList<double[]>();
+        data = new ArrayList<BufferData>();
         for (int i = 0; i < dataSources.size(); i++) {
-            data.add(new double[bufferSize]);
+            data.add(new BufferData(bufferSize));
 
         }
         empty = true;
@@ -55,15 +55,6 @@ public class DataBuffer {
 
     }
 
-    public void setSampleRate(int sampleRate) {
-        this.sampleRate = sampleRate;
-        this.initBuffer();
-    }
-
-    public void setBufferSize(int bufferSize) {
-        this.bufferSize = bufferSize;
-        this.initBuffer();
-    }
 
     public synchronized void addData() {
         if (sampleRateCounter < sampleRate) {
@@ -80,12 +71,12 @@ public class DataBuffer {
         for (int i = 0; i < dataSources.size(); i++) {
             if (empty) {
                 for (int pos = 0; pos < bufferSize; pos++) {
-                    data.get(i)[pos] = dataSources.get(i).getValue();
+                    data.get(i).getData()[pos] = dataSources.get(i).getValue();
                 }
 
             }
-            data.get(i)[position] = dataSources.get(i).getValue();
-
+            data.get(i).getData()[position] = dataSources.get(i).getValue();
+            data.get(i).setPosition(position);
 
         }
         if (empty) {
@@ -94,28 +85,13 @@ public class DataBuffer {
 
     }
 
-    public int indexOf(DataSource source) {
-        return dataSources.indexOf(source);
-    }
-
-    public synchronized BufferData getData(DataSource dataSource, BufferData bufferData) {
+    public synchronized BufferData getData(DataSource dataSource) {
 
         if (dataSources.contains(dataSource)) {
-            double[] dataToCopy = data.get(dataSources.indexOf(dataSource));
-            if (bufferData == null) {
-
-                return new BufferData(position, ArrayUtil.copy(dataToCopy));
-
-            } else {
-                bufferData.update(position, dataToCopy);
-            }
+            return data.get(dataSources.indexOf(dataSource));
 
         }
-        return bufferData;
-    }
-
-    public int getPosition() {
-        return position;
+        return null;
     }
 
     public int getBufferSize() {

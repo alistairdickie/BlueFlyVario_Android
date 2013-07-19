@@ -69,6 +69,8 @@ public class DeviceListActivity extends Activity {
         // Set result CANCELED incase the user backs out
         setResult(Activity.RESULT_CANCELED);
 
+        int connectMethod = Integer.valueOf(BFVSettings.sharedPrefs.getString("bluetooth_connectMethod", BFVService.CONNECT_REFLECT + ""));
+
         // Initialize the button to perform device discovery
         Button scanButton = (Button) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new OnClickListener() {
@@ -77,6 +79,10 @@ public class DeviceListActivity extends Activity {
                 v.setVisibility(View.GONE);
             }
         });
+
+        if (connectMethod == BFVService.CONNECT_REFLECT) { //Connection to a new device through the app when using the reflect method is flaky on some devices.
+            scanButton.setVisibility(View.GONE);
+        }
 
         // Initialize array adapters. One for already paired devices and
         // one for newly discovered devices
@@ -92,6 +98,10 @@ public class DeviceListActivity extends Activity {
         ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
         newDevicesListView.setAdapter(mNewDevicesArrayAdapter);
         newDevicesListView.setOnItemClickListener(mDeviceClickListener);
+
+        if (connectMethod == BFVService.CONNECT_REFLECT) {  //Connection to a new device through the app when using the reflect method is flaky on some devices.
+            newDevicesListView.setVisibility(View.GONE);
+        }
 
         // Register for broadcasts when a device is discovered
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
