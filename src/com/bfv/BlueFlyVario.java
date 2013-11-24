@@ -50,6 +50,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.prefs.Preferences;
 
 public class BlueFlyVario extends MapActivity {
@@ -432,7 +434,7 @@ public class BlueFlyVario extends MapActivity {
 
                                     double qnh = alt.setAltitude(alt_setalt) / 100.0;
                                     SharedPreferences.Editor prefsEditor = BFVSettings.sharedPrefs.edit();
-                                    DecimalFormat df = new DecimalFormat("0.00");
+                                    DecimalFormat df = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
                                     prefsEditor.putString("alt_setqnh", df.format(qnh));
                                     prefsEditor.commit();
 

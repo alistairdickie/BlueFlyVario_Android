@@ -22,9 +22,11 @@ import android.graphics.Color;
 import com.bfv.view.ViewComponentParameter;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class HardwareParameter {
 
@@ -32,26 +34,29 @@ public class HardwareParameter {
     public static final int TYPE_DOUBLE = 1;
     public static final int TYPE_BOOLEAN = 4;
     public static final int TYPE_INTLIST = 5;
+    public static final int TYPE_INTOFFSET = 2;
 
     private String name;
     private String code;
-    private double multiplier;
+    private double factor;
     private int type;
-    private short maxHWVal;
-    private short minHWVal;
+    private int maxHWVal;
+    private int minHWVal;
+    private int minHWVersion;
 
 
-    private short hardwareValue;
+    private int hardwareValue;
     private String value;
     private String message;
 
-    public HardwareParameter(String code, int type, String name, double multiplier, int minHWVal, int maxHWVal) {
+    public HardwareParameter(String code, int minHWVersion, int type, String name, double factor, int minHWVal, int maxHWVal) {
         this.name = name;
         this.code = code;
-        this.multiplier = multiplier;
+        this.factor = factor;
         this.type = type;
-        this.minHWVal = (short) minHWVal;
-        this.maxHWVal = (short) maxHWVal;
+        this.minHWVersion = minHWVersion;
+        this.minHWVal = minHWVal;
+        this.maxHWVal = maxHWVal;
     }
 
     //for the lists only
@@ -63,6 +68,10 @@ public class HardwareParameter {
         return name;
     }
 
+    public int getMinHWVersion() {
+        return minHWVersion;
+    }
+
     public String getValue() {
         if (type == TYPE_INTLIST) {
             return getIntListName();
@@ -70,7 +79,7 @@ public class HardwareParameter {
         return value;
     }
 
-    public short getHardwareValue() {
+    public int getHardwareValue() {
         return hardwareValue;
     }
 
@@ -84,15 +93,19 @@ public class HardwareParameter {
                 hardwareValue = 1;
             }
         } else if (type == TYPE_DOUBLE) {
-            hardwareValue = (short) (getDoubleValue() * multiplier);
+            hardwareValue = (int) (getDoubleValue() * factor);
 
         } else if (type == TYPE_INT) {
-            hardwareValue = (short) getIntValue();
+            hardwareValue = (int) getIntValue();
+
+        } else if (type == TYPE_INTOFFSET) {
+            hardwareValue = (int) (getIntValue() - factor);
 
         } else if (type == TYPE_INTLIST) {
             //todo
 
         }
+
         if (hardwareValue < minHWVal) {
             hardwareValue = minHWVal;
         }
@@ -109,7 +122,7 @@ public class HardwareParameter {
         value = hardwareValueToStringValue(hardwareValue);
     }
 
-    private String hardwareValueToStringValue(short hwVal) {
+    private String hardwareValueToStringValue(int hwVal) {
         if (type == TYPE_BOOLEAN) {
             if (hwVal == 0) {
                 return "false";
@@ -118,10 +131,13 @@ public class HardwareParameter {
             }
 
         } else if (type == TYPE_DOUBLE) {
-            return df.format(hwVal / multiplier);
+            return df.format(hwVal / factor);
 
         } else if (type == TYPE_INT) {
             return hwVal + "";
+
+        } else if (type == TYPE_INTOFFSET) {
+            return (int) (hwVal + factor) + "";
 
         } else if (type == TYPE_INTLIST) {
             //todo
@@ -168,7 +184,7 @@ public class HardwareParameter {
     }
 
     public HardwareParameter setDecimalFormat(String format) {
-        df = new DecimalFormat(format);
+        df = new DecimalFormat(format, DecimalFormatSymbols.getInstance(Locale.US));
         return this;
     }
 

@@ -97,6 +97,12 @@ public class BFVService {
 
     private int hardwareVersion;
 
+    private boolean flagPitotCalibrated;
+    private int pitotCalibrateCount;
+    private double pitotCalibration;
+    private double pressureDiff;
+    private double pitotSpeed;
+
 
     /**
      * Constructor. Prepares a new BlueFlyVario session.
@@ -151,6 +157,7 @@ public class BFVService {
             public void run() {
 
                 try {
+                    calibratePitot();
                     Thread.sleep(1000);
                     hasPressure = true;
                     setState(STATE_CONNECTEDANDPRESSURE);
@@ -396,6 +403,49 @@ public class BFVService {
         }
 
 
+    }
+
+    public synchronized void updatePitotPressures(int pitotPressure, int staticPressure) {
+
+        if (flagPitotCalibrated) {
+            pressureDiff = 0.98 * pressureDiff + 0.02 * (pitotPressure - staticPressure - pitotCalibration);
+            double root = 2 * pressureDiff / 1.2754;
+            if (root < 0) {
+                root = 0.0;
+            }
+            pitotSpeed = Math.sqrt(root);
+
+
+        } else {
+            pitotCalibrateCount++;
+            if (pitotCalibrateCount > 50) {
+                if (pitotCalibrateCount <= 500) {
+                    pitotCalibration += (pitotPressure - staticPressure);
+
+
+                } else {
+                    pitotCalibration = pitotCalibration / 450.0;
+                    pitotCalibrateCount = 0;
+                    flagPitotCalibrated = true;
+                }
+            }
+        }
+    }
+
+    public synchronized double getPitotSpeed() {
+        if (flagPitotCalibrated) {
+            return pitotSpeed;
+        } else {
+            return -99.0;
+        }
+
+    }
+
+    public synchronized void calibratePitot() {
+        flagPitotCalibrated = false;
+        pitotCalibrateCount = 0;
+        pitotSpeed = 0;
+        pressureDiff = 0;
     }
 
     public synchronized DataBuffer getDataBuffer() {

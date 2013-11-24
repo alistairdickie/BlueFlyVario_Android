@@ -56,58 +56,67 @@ public class HardwareParameters {
         parameters = new ArrayList<HardwareParameter>();
 
 
-        parameters.add(new HardwareParameter("BAC", HardwareParameter.TYPE_BOOLEAN, "useAudioWhenConnected", 1.0, 0, 1)
+        parameters.add(new HardwareParameter("BAC", 6, HardwareParameter.TYPE_BOOLEAN, "useAudioWhenConnected", 1.0, 0, 1)
                 .setMessage("Check to enable hardware audio when connected."));
 
-        parameters.add(new HardwareParameter("BAD", HardwareParameter.TYPE_BOOLEAN, "useAudioWhenDisconnected", 1.0, 0, 1)
+        parameters.add(new HardwareParameter("BAD", 6, HardwareParameter.TYPE_BOOLEAN, "useAudioWhenDisconnected", 1.0, 0, 1)
                 .setMessage("Check to enable hardware audio when disconnected."));
 
-        parameters.add(new HardwareParameter("BFK", HardwareParameter.TYPE_DOUBLE, "positionNoise", 1000.0, 10, 10000)
+        parameters.add(new HardwareParameter("BFK", 6, HardwareParameter.TYPE_DOUBLE, "positionNoise", 1000.0, 10, 10000)
                 .setDecimalFormat("0.00")
                 .setMessage("Kalman filter position noise."));
 
-        parameters.add(new HardwareParameter("BFL", HardwareParameter.TYPE_DOUBLE, "liftThreshold", 100.0, 0, 1000)
+        parameters.add(new HardwareParameter("BFL", 6, HardwareParameter.TYPE_DOUBLE, "liftThreshold", 100.0, 0, 1000)
                 .setDecimalFormat("0.00")
                 .setMessage("The value in m/s of lift when the audio beeping will start."));
 
-        parameters.add(new HardwareParameter("BOL", HardwareParameter.TYPE_DOUBLE, "liftOffThreshold", 100.0, 0, 1000)
+        parameters.add(new HardwareParameter("BOL", 6, HardwareParameter.TYPE_DOUBLE, "liftOffThreshold", 100.0, 0, 1000)
                 .setDecimalFormat("0.00")
                 .setMessage("The value in m/s of lift when the audio beeping will stop."));
 
-        parameters.add(new HardwareParameter("BFQ", HardwareParameter.TYPE_INT, "liftFreqBase", 1.0, 500, 2000)
+        parameters.add(new HardwareParameter("BFQ", 6, HardwareParameter.TYPE_INT, "liftFreqBase", 1.0, 500, 2000)
                 .setMessage("The audio frequency for lift beeps in Hz of 0 m/s."));
 
-        parameters.add(new HardwareParameter("BFI", HardwareParameter.TYPE_INT, "liftFreqIncrement", 1.0, 0, 1000)
+        parameters.add(new HardwareParameter("BFI", 6, HardwareParameter.TYPE_INT, "liftFreqIncrement", 1.0, 0, 1000)
                 .setMessage("The increase in audio frequency for lift beeps in Hz for each 1 m/s."));
 
 
-        parameters.add(new HardwareParameter("BFS", HardwareParameter.TYPE_DOUBLE, "sinkThreshold", 100.0, 0, 1000)
+        parameters.add(new HardwareParameter("BFS", 6, HardwareParameter.TYPE_DOUBLE, "sinkThreshold", 100.0, 0, 1000)
                 .setDecimalFormat("0.00")
                 .setMessage("The value in -m/s of sink when the sink tone will start."));
 
 
-        parameters.add(new HardwareParameter("BOS", HardwareParameter.TYPE_DOUBLE, "sinkOffThreshold", 100.0, 0, 1000)
+        parameters.add(new HardwareParameter("BOS", 6, HardwareParameter.TYPE_DOUBLE, "sinkOffThreshold", 100.0, 0, 1000)
                 .setDecimalFormat("0.00")
                 .setMessage("The value in -m/s of sink when the sink tone will stop."));
 
-        parameters.add(new HardwareParameter("BSQ", HardwareParameter.TYPE_INT, "sinkFreqBase", 1.0, 250, 1000)
+        parameters.add(new HardwareParameter("BSQ", 6, HardwareParameter.TYPE_INT, "sinkFreqBase", 1.0, 250, 1000)
                 .setMessage("The audio frequency for the sink tone in Hz of 0 m/s."));
 
-        parameters.add(new HardwareParameter("BSI", HardwareParameter.TYPE_INT, "sinkFreqIncrement", 1.0, 0, 1000)
+        parameters.add(new HardwareParameter("BSI", 6, HardwareParameter.TYPE_INT, "sinkFreqIncrement", 1.0, 0, 1000)
                 .setMessage("The decrease in audio frequency for sink tone in Hz for each -1 m/s."));
 
 
-        parameters.add(new HardwareParameter("BTH", HardwareParameter.TYPE_INT, "secondsBluetoothWait", 1.0, 0, 10000)
+        parameters.add(new HardwareParameter("BTH", 6, HardwareParameter.TYPE_INT, "secondsBluetoothWait", 1.0, 0, 10000)
                 .setMessage("The time that the hardware will be allow establishment of a bluetooth connection for when turned on."));
 
 
-        parameters.add(new HardwareParameter("BRM", HardwareParameter.TYPE_DOUBLE, "rateMultiplier", 100.0, 10, 100)
+        parameters.add(new HardwareParameter("BRM", 6, HardwareParameter.TYPE_DOUBLE, "rateMultiplier", 100.0, 10, 100)
                 .setDecimalFormat("0.00")
                 .setMessage("The lift beep cadence -> 0.5 = beeping twice as fast as normal."));
 
-        parameters.add(new HardwareParameter("BVL", HardwareParameter.TYPE_DOUBLE, "volume", 1000.0, 1, 1000)
+        parameters.add(new HardwareParameter("BVL", 6, HardwareParameter.TYPE_DOUBLE, "volume", 1000.0, 1, 1000)
                 .setDecimalFormat("0.000")
                 .setMessage("The volume of beeps ->  0.1 is only about 1/2 as loud as 1.0."));
+
+        parameters.add(new HardwareParameter("BOM", 7, HardwareParameter.TYPE_INT, "outputMode", 1.0, 0, 3)
+                .setMessage("The output mode -> 0-BlueFlyVario(default), 1-LK8EX1, 2-LX, 3-FlyNet."));
+
+        parameters.add(new HardwareParameter("BOF", 7, HardwareParameter.TYPE_INT, "outputFrequency", 1.0, 1, 50)
+                .setMessage("The output frequency -> 1-every 20ms ... 50-every 20msx50=1000ms"));
+
+        parameters.add(new HardwareParameter("BQH", 7, HardwareParameter.TYPE_INTOFFSET, "outputQNH", 80000.0, 0, 65535)
+                .setMessage("QNH (in Pa), used for output alt for some output modes - (default 101325)"));
 
 
     }
@@ -129,7 +138,7 @@ public class HardwareParameters {
         int hardwareValue = parameter.getHardwareValue();
         String message = "$" + code + " " + hardwareValue + "*";
         service.sendConnectedHardwareMessage(message);
-        Log.i("BFV", message);
+        //  Log.i("BFV", message);
     }
 
     public void requestParameterValues() {
@@ -173,6 +182,10 @@ public class HardwareParameters {
 
     public void setHardwareListActivity(HardwareListActivity hardwareListActivity) {
         this.hardwareListActivity = hardwareListActivity;
+    }
+
+    public BFVService getService() {
+        return service;
     }
 
     public String getHardwareVersion() {

@@ -37,6 +37,8 @@ import com.bfv.model.Vario;
 import com.bfv.view.VarioSurfaceView;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 public class BFVSettings extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
@@ -218,6 +220,7 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
 
         } else if (preference.getKey().equals("about")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            BlueFlyVario.blueFlyVario.getVarioService().calibratePitot();
 
             String version = "";
             int versionCode = -1;
@@ -296,7 +299,7 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
                 //Log.e("BFV", "setalt" + alt_setalt + " notQNH?" + stopSetQNH);
                 if (!stopSetQNH) {
                     SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
-                    DecimalFormat df = new DecimalFormat("0.00");
+                    DecimalFormat df = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
                     prefsEditor.putString("alt_setqnh", df.format(qnh));
                     prefsEditor.commit();
                 }

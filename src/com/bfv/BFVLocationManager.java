@@ -39,7 +39,9 @@ import com.bfv.view.VarioSurfaceView;
 
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class BFVLocationManager implements LocationListener {
 
@@ -475,7 +477,7 @@ public class BFVLocationManager implements LocationListener {
         SharedPreferences.Editor prefsEditor = BFVSettings.sharedPrefs.edit();
 
         double qnh = BlueFlyVario.blueFlyVario.getAlt().setAltitude(location.getAltitude()) / 100.0;
-        DecimalFormat df = new DecimalFormat("0.00");
+        DecimalFormat df = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
         prefsEditor.putString("alt_setqnh", df.format(qnh));
         prefsEditor.commit();
         Toast toast = Toast.makeText(context, "Altitude set from GPS to " + (int) (location.getAltitude()) + "m", Toast.LENGTH_SHORT);

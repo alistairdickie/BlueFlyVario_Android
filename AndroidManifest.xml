@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.bfv"
-          android:versionCode="7"
-          android:versionName="0.61b">
-    <uses-sdk android:minSdkVersion="10"/>
+          android:versionCode="8"
+          android:versionName="0.7b">
+    <uses-sdk android:minSdkVersion="9"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>

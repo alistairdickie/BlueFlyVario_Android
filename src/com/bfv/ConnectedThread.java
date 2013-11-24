@@ -163,11 +163,17 @@ public class ConnectedThread extends Thread {
 
                 this.lastUpdateType = UPDATE_PRS;
 
-
-                service.updatePressure(Integer.parseInt(split[1], 16), time);
+                int pressure = Integer.parseInt(split[1], 16);
+                service.updatePressure(pressure, time);
                 if (!firstPressure) {
                     service.firstPressure();
                     firstPressure = true;
+                }
+
+                if (split.length > 2) {
+                    int pressure2 = Integer.parseInt(split[2], 16);
+
+                    service.updatePitotPressures(pressure2, pressure);
                 }
 
 

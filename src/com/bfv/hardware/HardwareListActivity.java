@@ -143,7 +143,9 @@ public class HardwareListActivity extends Activity {
         hardwareParameterArrayAdapter.clear();
         for (int i = 0; i < parameters.size(); i++) {
             HardwareParameter parameter = parameters.get(i);
-            hardwareParameterArrayAdapter.add(parameter.getName() + "\n   " + parameter.getValue());
+            if (parameter.getMinHWVersion() <= hardwareParameters.getService().getHardwareVersion()) {
+                hardwareParameterArrayAdapter.add(parameter.getName() + "\n   " + parameter.getValue());
+            }
         }
     }
 
@@ -203,6 +205,32 @@ public class HardwareListActivity extends Activity {
                             public void onClick(DialogInterface dialog, int whichButton) {
 
                                 setParameterValue(nameInt, inputInt.getText().toString());
+
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                // Do nothing.
+                            }
+                        }).show();
+
+                break;
+
+            case (HardwareParameter.TYPE_INTOFFSET):
+                final EditText inputIntOff = new EditText(this);
+                inputIntOff.setSingleLine();
+                inputIntOff.setKeyListener(new DigitsKeyListener(false, false));
+                final String nameIntOff = parameter.getName();
+                inputIntOff.setText(parameter.getValue());
+
+                new AlertDialog.Builder(this)
+                        .setTitle("Edit Integer Parameter")
+                        .setMessage(parameter.getName() + ": " + parameter.getMessage(true))
+                        .setView(inputIntOff)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+
+                                setParameterValue(nameIntOff, inputIntOff.getText().toString());
 
                             }
                         })

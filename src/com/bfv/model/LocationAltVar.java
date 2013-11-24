@@ -22,6 +22,8 @@ import android.location.Location;
 import android.util.Log;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 public class LocationAltVar {
 
@@ -39,8 +41,8 @@ public class LocationAltVar {
     public float driftedX;
     public float driftedY;
     private long creationTime;
-    private DecimalFormat latLongFormat = new DecimalFormat("0.000000");
-    private DecimalFormat df3 = new DecimalFormat("0.000");
+    private DecimalFormat latLongFormat = new DecimalFormat("0.000000", DecimalFormatSymbols.getInstance(Locale.US));
+    private DecimalFormat df3 = new DecimalFormat("0.000", DecimalFormatSymbols.getInstance(Locale.US));
 
     public LocationAltVar() {
         baroAlt = -1000;
