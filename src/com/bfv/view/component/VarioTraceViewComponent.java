@@ -30,7 +30,9 @@ import com.bfv.view.ViewUtil;
 import com.bfv.view.component.BFVViewComponent;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class VarioTraceViewComponent extends BFVViewComponent {
 
@@ -52,9 +54,9 @@ public class VarioTraceViewComponent extends BFVViewComponent {
     //    private BufferData varBufferData2;
     private BufferData altBufferData;
     private Rect textBounds = new Rect();
-    private DecimalFormat dfVarioScale = new DecimalFormat("+0;-0");
-    private DecimalFormat dfVarioScale1 = new DecimalFormat("0.0");
-    private DecimalFormat dfAlt = new DecimalFormat("0.0m ");
+    private DecimalFormat dfVarioScale = new DecimalFormat("+0;-0", DecimalFormatSymbols.getInstance(Locale.US));
+    private DecimalFormat dfVarioScale1 = new DecimalFormat("0.0", DecimalFormatSymbols.getInstance(Locale.US));
+    private DecimalFormat dfAlt = new DecimalFormat("0.0m ", DecimalFormatSymbols.getInstance(Locale.US));
 
 
     public VarioTraceViewComponent(RectF rect, VarioSurfaceView view) {

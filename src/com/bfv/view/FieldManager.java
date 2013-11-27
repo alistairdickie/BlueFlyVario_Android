@@ -46,6 +46,7 @@ public class FieldManager {
     public static final int FIELD_FLIGHT_TIME = 16;
     public static final int FIELD_FLIGHT_DISTANCE = 17;
     public static final int FIELD_FLIGHT_ALT = 18;
+    public static final int FIELD_PITOT_SPEED = 19;
 
 
     private VarioSurfaceView surfaceView;
@@ -143,6 +144,13 @@ public class FieldManager {
 
         field = new Field(FIELD_FLIGHT_ALT, "flightAltitude", "0.0", "Flight Altitude", "m");
         field.addUnits("ft", 3.2808399);
+        fields.add(field);
+
+        field = new Field(FIELD_PITOT_SPEED, "pitotSpeed", "0.0", "PitotSpeed", "m/s");
+        field.addUnits("km/hr", 3.6);
+        field.addUnits("mph", 2.23693629);
+        field.addUnits("knts", 1.94384449);
+        field.setDefaultMultiplierIndex(0);
         fields.add(field);
 
 
@@ -293,6 +301,14 @@ public class FieldManager {
                 } else {
                     return "--";
                 }
+                break;
+            case FIELD_PITOT_SPEED:
+                if (varioService.hasPressure()) {
+                    value = varioService.getPitotSpeed();
+                } else {
+                    return "--";
+                }
+
                 break;
         }
         value = value * field.getUnitMultiplier(multiplierIndex);

@@ -26,7 +26,9 @@ import com.bfv.view.ViewComponentParameter;
 import com.bfv.view.component.BFVViewComponent;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class FieldViewComponent extends BFVViewComponent {
 
@@ -86,7 +88,7 @@ public class FieldViewComponent extends BFVViewComponent {
     public void setDefaults() {
 //Log.i("BFV", "SetDefaults");
         if (field != null) {
-            df = new DecimalFormat(field.getDefaultDecimalFormat());
+            df = new DecimalFormat(field.getDefaultDecimalFormat(), DecimalFormatSymbols.getInstance(Locale.US));
             multiplierIndex = field.getDefaultMultiplierIndex();
             setDefaultLabel();
         }
@@ -113,7 +115,7 @@ public class FieldViewComponent extends BFVViewComponent {
     }
 
     public void setDecimalFormat(String format) {
-        this.df = new DecimalFormat(format);
+        this.df = new DecimalFormat(format, DecimalFormatSymbols.getInstance(Locale.US));
     }
 
     @Override

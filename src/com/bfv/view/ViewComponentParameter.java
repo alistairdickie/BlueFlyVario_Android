@@ -22,8 +22,10 @@ import android.graphics.Color;
 import android.util.Log;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Locale;
 
 public class ViewComponentParameter {
 
@@ -181,7 +183,7 @@ public class ViewComponentParameter {
     }
 
     public ViewComponentParameter setDecimalFormat(String format) {
-        df = new DecimalFormat(format);
+        df = new DecimalFormat(format, DecimalFormatSymbols.getInstance(Locale.US));
         return this;
     }
 }

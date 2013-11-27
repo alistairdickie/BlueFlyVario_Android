@@ -715,10 +715,12 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
         MapViewManager mapViewManager = BlueFlyVario.blueFlyVario.getMapViewManager();
         mapViewManager.clearOverlays();
         ArrayList<BFVMapOverlay> mapOverlays = viewPages.get(currentView).getMapOverlays();
+        if (mapOverlays != null) {
+            for (int i = 0; i < mapOverlays.size(); i++) {
+                BFVMapOverlay mapOverlay = mapOverlays.get(i);
+                mapViewManager.addOverlay(mapOverlay);
+            }
 
-        for (int i = 0; i < mapOverlays.size(); i++) {
-            BFVMapOverlay mapOverlay = mapOverlays.get(i);
-            mapViewManager.addOverlay(mapOverlay);
         }
 
 
