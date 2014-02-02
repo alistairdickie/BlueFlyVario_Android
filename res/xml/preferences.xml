@@ -313,6 +313,14 @@
                 android:title="Hardware Settings"
                 android:summary="Set parameters on the connected device"
                 />
+        <!--
+        <Preference
+                        android:key="calibrate"
+                        android:title="Calibrate Pitot"
+                        android:summary="Recalibrate pitot"
+                        />
+
+        -->
         <Preference
                 android:key="about"
                 android:title="About"

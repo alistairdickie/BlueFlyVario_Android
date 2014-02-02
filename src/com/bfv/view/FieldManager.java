@@ -47,6 +47,7 @@ public class FieldManager {
     public static final int FIELD_FLIGHT_DISTANCE = 17;
     public static final int FIELD_FLIGHT_ALT = 18;
     public static final int FIELD_PITOT_SPEED = 19;
+    public static final int FIELD_PITOT_CALIBRATION = 20;
 
 
     private VarioSurfaceView surfaceView;
@@ -152,6 +153,9 @@ public class FieldManager {
         field.addUnits("knts", 1.94384449);
         field.setDefaultMultiplierIndex(0);
         fields.add(field);
+
+//        field = new Field(FIELD_PITOT_CALIBRATION, "pitotCalibration", "0.0", "pitotCalibration", "pa");
+//        fields.add(field);
 
 
     }
@@ -305,6 +309,14 @@ public class FieldManager {
             case FIELD_PITOT_SPEED:
                 if (varioService.hasPressure()) {
                     value = varioService.getPitotSpeed();
+                } else {
+                    return "--";
+                }
+
+                break;
+            case FIELD_PITOT_CALIBRATION:
+                if (varioService.hasPressure()) {
+                    value = varioService.getPitotCalibration();
                 } else {
                     return "--";
                 }

@@ -83,6 +83,7 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
         sharedPrefs.registerOnSharedPreferenceChangeListener(this);
         this.findPreference("default").setOnPreferenceClickListener(this);
         this.findPreference("about").setOnPreferenceClickListener(this);
+        //  this.findPreference("calibrate").setOnPreferenceClickListener(this);
         Preference hardware = this.findPreference("hardware");
 
 
@@ -249,6 +250,9 @@ public class BFVSettings extends PreferenceActivity implements SharedPreferences
 
             return true;
 
+        } else if (preference.getKey().equals("calibrate")) {
+            BlueFlyVario.blueFlyVario.getVarioService().calibratePitot();
+            return true;
         } else if (preference.getKey().equals("hardware")) {
 
             if (BlueFlyVario.blueFlyVario.getVarioService().getHardwareVersion() < 6) {

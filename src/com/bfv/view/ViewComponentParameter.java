@@ -149,13 +149,14 @@ public class ViewComponentParameter {
     }
 
     public double getDoubleValue() {
-        NumberFormat nf = NumberFormat.getInstance();
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
 
         try {
             return nf.parse(value).doubleValue(); //try to parse the commas in european locales...
         } catch (ParseException e) {
             return Double.parseDouble(value); //fall back to a simple parse..
         }
+
 
     }
 

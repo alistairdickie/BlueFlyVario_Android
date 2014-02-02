@@ -408,7 +408,7 @@ public class BFVService {
     public synchronized void updatePitotPressures(int pitotPressure, int staticPressure) {
 
         if (flagPitotCalibrated) {
-            pressureDiff = 0.98 * pressureDiff + 0.02 * (pitotPressure - staticPressure - pitotCalibration);
+            pressureDiff = 0.95 * pressureDiff + 0.05 * (pitotPressure - staticPressure - pitotCalibration);
             double root = 2 * pressureDiff / 1.2754;
             if (root < 0) {
                 root = 0.0;
@@ -446,6 +446,10 @@ public class BFVService {
         pitotCalibrateCount = 0;
         pitotSpeed = 0;
         pressureDiff = 0;
+    }
+
+    public double getPitotCalibration() {
+        return pitotCalibration;
     }
 
     public synchronized DataBuffer getDataBuffer() {

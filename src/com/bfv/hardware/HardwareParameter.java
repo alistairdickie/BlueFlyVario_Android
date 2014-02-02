@@ -160,7 +160,7 @@ public class HardwareParameter {
     }
 
     public double getDoubleValue() {
-        NumberFormat nf = NumberFormat.getInstance();
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
 
         try {
             return nf.parse(value).doubleValue(); //try to parse the commas in european locales...
