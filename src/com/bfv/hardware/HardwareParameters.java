@@ -109,8 +109,8 @@ public class HardwareParameters {
                 .setDecimalFormat("0.000")
                 .setMessage("The volume of beeps ->  0.1 is only about 1/2 as loud as 1.0."));
 
-        parameters.add(new HardwareParameter("BOM", 7, HardwareParameter.TYPE_INT, "outputMode", 1.0, 0, 3)
-                .setMessage("The output mode -> 0-BlueFlyVario(default), 1-LK8EX1, 2-LX, 3-FlyNet."));
+        parameters.add(new HardwareParameter("BOM", 7, HardwareParameter.TYPE_INT, "outputMode", 1.0, 0, 4)
+                .setMessage("The output mode -> 0-BlueFlyVario(default), 1-LK8EX1, 2-LX, 3-FlyNet, 4-Nothing."));
 
         parameters.add(new HardwareParameter("BOF", 7, HardwareParameter.TYPE_INT, "outputFrequency", 1.0, 1, 50)
                 .setMessage("The output frequency -> 1-every 20ms ... 50-every 20msx50=1000ms"));
@@ -118,6 +118,21 @@ public class HardwareParameters {
         parameters.add(new HardwareParameter("BQH", 7, HardwareParameter.TYPE_INTOFFSET, "outputQNH", 80000.0, 0, 65535)
                 .setMessage("QNH (in Pa), used for output alt for some output modes - (default 101325)"));
 
+        //String code, int minHWVersion, int type, String name, double factor, int minHWVal, int maxHWVal) {
+        parameters.add(new HardwareParameter("BRB", 8, HardwareParameter.TYPE_INT, "uart1BRG", 1.0, 0, 655535)
+                .setMessage("BRG setting for UART1, baud = 2000000/(BRG-1) (default of 207 = approx 9600 baud)"));
+
+        parameters.add(new HardwareParameter("BR2", 9, HardwareParameter.TYPE_INT, "uart2BRG", 1.0, 0, 655535)
+                .setMessage("BRG setting for UART1, baud = 2000000/(BRG-1) (default of 34 = approx 57.6k baud)"));
+
+        parameters.add(new HardwareParameter("BPT", 9, HardwareParameter.TYPE_BOOLEAN, "uartPassthrough", 1.0, 0, 1)
+                .setMessage("Check to pass data received by U2 into U1"));
+
+        parameters.add(new HardwareParameter("BUR", 9, HardwareParameter.TYPE_BOOLEAN, "uart1Raw", 0.0, 0, 1)
+                .setMessage("Check to make U1 data transferred raw instead of line by line"));
+
+        parameters.add(new HardwareParameter("BLD", 9, HardwareParameter.TYPE_BOOLEAN, "greenLED", 1.0, 0, 1)
+                .setMessage("Check to make green LED flash with beep"));
 
     }
 
