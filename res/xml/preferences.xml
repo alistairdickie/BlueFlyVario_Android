@@ -10,7 +10,7 @@
         <EditTextPreference
                 android:key="alt_setalt"
                 android:title="Set Altitude"
-                android:summary="The fixed value to set the altitude to"
+                android:summary="The fixed value to set the altitude to in meters"
                 android:dialogTitle="Set Altitude"
                 android:dialogMessage="Sets the altitude and then updates QNH"
                 android:defaultValue="0"
@@ -26,6 +26,7 @@
                 android:numeric="decimal"
                 />
 
+
         <CheckBoxPreference
                 android:key="alt_setgps"
                 android:title="Set Altitude from GPS"
@@ -39,6 +40,16 @@
                 android:summary=""
                 android:defaultValue="true"
 
+                />
+
+        <EditTextPreference
+                android:key="gr_seconds"
+                android:title="Glide Ratio Seconds"
+                android:summary="The number of seconds used for glide ratio calculation"
+                android:dialogTitle="Set glide ratio seconds"
+                android:dialogMessage="Sets the number of seconds used for glide ratio calculation"
+                android:defaultValue="20.0"
+                android:numeric="decimal"
                 />
 
 
@@ -305,13 +316,13 @@
             android:key="actions_category">
         <Preference
                 android:key="default"
-                android:title="Restore Default Settings"
-                android:summary="Restore all settings to the original values"
+                android:title="Restore Default App Settings"
+                android:summary="Restore all settings in the app to the original values (this will not affect the hardware settings for any BlueFly connected)"
                 />
         <Preference
                 android:key="hardware"
                 android:title="Hardware Settings"
-                android:summary="Set parameters on the connected device"
+                android:summary="Set hardware settings on the connected BlueFly"
                 />
         <!--
         <Preference

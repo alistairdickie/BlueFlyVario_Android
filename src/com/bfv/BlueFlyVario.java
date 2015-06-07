@@ -687,7 +687,7 @@ public class BlueFlyVario extends MapActivity {
                 return true;
             case R.id.layout:
                 if (varioSurface != null) {
-                    CharSequence[] items = new CharSequence[]{"Add View Component", "Add Map Overlay", "Overlay Properties", "Page Properties", "New Page", "Delete Page", "Export Layout", "Import Layout", "Load Default Layout"};
+                    CharSequence[] items = new CharSequence[]{"Add View Component", "Add Map Overlay", "Overlay Properties", "Page Properties", "New Page", "Delete Page", "Export Layout", "Import Layout", "Load Default Layout", "Generate Default Layout"};
 
                     final Context context = this;
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -718,6 +718,8 @@ public class BlueFlyVario extends MapActivity {
                                 startActivityForResult(intent, REQUEST_FILE);
                             } else if (item == 8) {
                                 varioSurface.setUpDefaultViews();
+                            } else if (item == 9) {
+                                varioSurface.setUpDefaultViewsManually();
                             }
                         }
                     });

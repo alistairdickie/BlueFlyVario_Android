@@ -262,28 +262,28 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
 
         viewPages.add(viewPage1);
 
-//        BFVViewPage viewPage2 = new BFVViewPage(new RectF(frame), this);
-//        viewPage2.setOrientation(orientation);
-//        RectF label2Rect = new RectF(1, 1, frame.width() - 1, 50);
-//        LabelViewComponent label2 = new LabelViewComponent(label2Rect, this);
-//        label2.setLabel("Location Example");
-//        viewPage2.addViewComponent(label2);
-//
-//        RectF locationComponentRect2 = new RectF(1, frame.height() - frame.width(), frame.width() - 1, frame.height() - 1);
-//        LocationViewComponent locationView2 = new LocationViewComponent(locationComponentRect2, this);
-//        viewPage2.addViewComponent(locationView2);
-//        viewPages.add(viewPage2);
-//
-//        BFVViewPage viewPage3 = new BFVViewPage(new RectF(frame), this);
-//        viewPage3.setOrientation(orientation);
-//        RectF label3Rect = new RectF(1, 1, frame.width() - 1, 50);
-//        LabelViewComponent label3 = new LabelViewComponent(label3Rect, this);
-//        label3.setLabel("Wind Trace Test");
-//        viewPage3.addViewComponent(label3);
-//        RectF windComponentRect3 = new RectF(1, frame.height() - frame.width(), frame.width() - 1, frame.height() - 1);
-//        WindTraceViewComponent windTrace = new WindTraceViewComponent(windComponentRect3, this);
-//        viewPage3.addViewComponent(windTrace);
-//        viewPages.add(viewPage3);
+        BFVViewPage viewPage2 = new BFVViewPage(new RectF(frame), this);
+        viewPage2.setOrientation(orientation);
+        RectF label2Rect = new RectF(1, 1, frame.width() - 1, 50);
+        LabelViewComponent label2 = new LabelViewComponent(label2Rect, this);
+        label2.setLabel("Location Example");
+        viewPage2.addViewComponent(label2);
+
+        RectF locationComponentRect2 = new RectF(1, frame.height() - frame.width(), frame.width() - 1, frame.height() - 1);
+        LocationViewComponent locationView2 = new LocationViewComponent(locationComponentRect2, this);
+        viewPage2.addViewComponent(locationView2);
+        viewPages.add(viewPage2);
+
+        BFVViewPage viewPage3 = new BFVViewPage(new RectF(frame), this);
+        viewPage3.setOrientation(orientation);
+        RectF label3Rect = new RectF(1, 1, frame.width() - 1, 50);
+        LabelViewComponent label3 = new LabelViewComponent(label3Rect, this);
+        label3.setLabel("Wind Trace Test");
+        viewPage3.addViewComponent(label3);
+        RectF windComponentRect3 = new RectF(1, frame.height() - frame.width(), frame.width() - 1, frame.height() - 1);
+        WindTraceViewComponent windTrace = new WindTraceViewComponent(windComponentRect3, this);
+        viewPage3.addViewComponent(windTrace);
+        viewPages.add(viewPage3);
 
 
         setViewPage(0);
@@ -744,26 +744,43 @@ public class VarioSurfaceView extends SurfaceView implements Runnable, SurfaceHo
     }
 
     public void setCurrentViewPageOrientation(int orientation, boolean maybeResize) {
-        //Log.i("BFV", "loading" + loading);
+
         if (loading) {
             return;
         }
+
+        int orient = 0;
+        if (orientation == 0) {
+            orient = 0;// Landscape
+        } else if (orientation == 1) {
+            orient = 1;// Portrait
+        } else if (orientation == 2) {
+            orient = 8;//Reverse Landscape
+        } else if (orientation == 3) {
+            orient = 9;//Reverse Portrait
+        } else {
+            orient = 1;//Portrait
+        }
+
+        Log.i("BFV", "orientation" + orientation + "  orient" + orient);
+
+
         int viewOrientation = BlueFlyVario.blueFlyVario.getRequestedOrientation();
-        if (orientation != viewOrientation) {
+        if (orient != viewOrientation) {
 
             if (layoutResizeOrientationChange && maybeResize) {
 
                 oldFrame = new Rect(frame);
 
                 stopRunning();
-                BlueFlyVario.blueFlyVario.setRequestedOrientation(orientation);
+                BlueFlyVario.blueFlyVario.setRequestedOrientation(orient);
                 layoutResizeOrientationChangeFlag = true;
                 thread = new Thread(this);
                 running = true;
                 thread.start();
 
             } else {
-                BlueFlyVario.blueFlyVario.setRequestedOrientation(orientation);
+                BlueFlyVario.blueFlyVario.setRequestedOrientation(orient);
             }
 
         }

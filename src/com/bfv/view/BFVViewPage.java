@@ -163,7 +163,7 @@ public class BFVViewPage implements ParamatizedComponent {  //extending BFVViewC
         parameters.add(new ViewComponentParameter("backColor").setColor(backColor));
         parameters.add(new ViewComponentParameter("frameWidth").setDecimalFormat("0").setDouble(pageFrame.width()));
         parameters.add(new ViewComponentParameter("frameHeight").setDecimalFormat("0").setDouble(pageFrame.height()));
-        parameters.add(new ViewComponentParameter("orientation").setIntList(orientation, new String[]{"Landscape", "Portrait"}));
+        parameters.add(new ViewComponentParameter("orientation").setIntList(orientation, new String[]{"Landscape", " Portrait", "Reverse Landscape", "Reverse Portrait"}));
         parameters.add(new ViewComponentParameter("drawMap").setBoolean(drawMap));
         parameters.add(new ViewComponentParameter("autoPanMap").setBoolean(autoPanMap));
         parameters.add(new ViewComponentParameter("mapSatelliteMode").setBoolean(mapSatelliteMode));
@@ -184,9 +184,22 @@ public class BFVViewPage implements ParamatizedComponent {  //extending BFVViewC
             pageFrame.bottom = (float) parameter.getDoubleValue();
         } else if (name.equals("orientation")) {
             orientation = parameter.getIntValue();
+            int orient = 0;
+            if (orientation == 0) {
+                orient = 0;// Landscape
+            } else if (orientation == 1) {
+                orient = 1;// Portrait
+            }
+            if (orientation == 2) {
+                orient = 8;//Reverse Landscape
+            } else if (orientation == 3) {
+                orient = 9;//Reverse Portrait
+            } else {
+                orient = 1;//Portrait
+            }
             //Log.i("BFV", "orient" + orientation);
-            surfaceView.setCurrentViewPageOrientation(orientation, true);
-            //Log.i("BFV", "orient2" + orientation);
+            surfaceView.setCurrentViewPageOrientation(orient, true);
+            ;
         } else if (name.equals("drawMap")) {
             drawMap = parameter.getBooleanValue();
             surfaceView.drawMap(drawMap());

@@ -273,6 +273,37 @@ public class BFVLocationManager implements LocationListener {
         setState(STATE_GPS_NOT_ENABLED);
     }
 
+    public synchronized double getGlideRatio() {
+        double gr_seconds = Double.valueOf(BFVSettings.sharedPrefs.getString("gr_seconds", "20"));
+        this.calculateLatLongDegLength();
+        if (location == null || locations.size() < 1) {
+            return 0;
+        }
+
+        long currentTime = System.currentTimeMillis();
+
+        for (int i = locations.size() - 1; i >= 0; i--) {
+            LocationAltVar locationAltVar = locations.get(i);
+            Location oldLocation = locationAltVar.getLocation();
+
+            double ageInSeconds = (location.getTime() - oldLocation.getTime()) / 1000.0;
+
+
+            if (ageInSeconds >= gr_seconds) {   //we are going to use this location for Glide Ratio
+
+
+                double dist = location.distanceTo(oldLocation);
+                double height = locations.get(locations.size() - 1).getBaroAlt() - locationAltVar.getBaroAlt();
+                return height / dist;
+
+
+            }
+
+
+        }
+        return 0;//if we got here then we do not have a location older than or equal to seconds.
+    }
+
 
     public synchronized void calculateDisplayableLocations() {
         this.calculateLatLongDegLength();

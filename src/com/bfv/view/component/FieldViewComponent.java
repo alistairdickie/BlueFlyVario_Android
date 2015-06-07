@@ -84,6 +84,13 @@ public class FieldViewComponent extends BFVViewComponent {
 
     }
 
+    public FieldViewComponent(RectF rect, VarioSurfaceView view, String fieldName) {
+        super(rect, view);
+
+        setDefaults();
+
+    }
+
 
     public void setDefaults() {
 //Log.i("BFV", "SetDefaults");

@@ -66,38 +66,38 @@ public class HardwareParameters {
                 .setDecimalFormat("0.00")
                 .setMessage("Kalman filter position noise."));
 
-        parameters.add(new HardwareParameter("BFL", 6, HardwareParameter.TYPE_DOUBLE, "liftThreshold", 100.0, 0, 1000)
+        parameters.add(new HardwareParameter("BFL", 6, HardwareParameter.TYPE_DOUBLE, "liftThreshold (m/s)", 100.0, 0, 1000)
                 .setDecimalFormat("0.00")
                 .setMessage("The value in m/s of lift when the audio beeping will start."));
 
-        parameters.add(new HardwareParameter("BOL", 6, HardwareParameter.TYPE_DOUBLE, "liftOffThreshold", 100.0, 0, 1000)
+        parameters.add(new HardwareParameter("BOL", 6, HardwareParameter.TYPE_DOUBLE, "liftOffThreshold (m/s)", 100.0, 0, 1000)
                 .setDecimalFormat("0.00")
                 .setMessage("The value in m/s of lift when the audio beeping will stop."));
 
-        parameters.add(new HardwareParameter("BFQ", 6, HardwareParameter.TYPE_INT, "liftFreqBase", 1.0, 500, 2000)
+        parameters.add(new HardwareParameter("BFQ", 6, HardwareParameter.TYPE_INT, "liftFreqBase (Hz)", 1.0, 500, 2000)
                 .setMessage("The audio frequency for lift beeps in Hz of 0 m/s."));
 
         parameters.add(new HardwareParameter("BFI", 6, HardwareParameter.TYPE_INT, "liftFreqIncrement", 1.0, 0, 1000)
                 .setMessage("The increase in audio frequency for lift beeps in Hz for each 1 m/s."));
 
 
-        parameters.add(new HardwareParameter("BFS", 6, HardwareParameter.TYPE_DOUBLE, "sinkThreshold", 100.0, 0, 1000)
+        parameters.add(new HardwareParameter("BFS", 6, HardwareParameter.TYPE_DOUBLE, "sinkThreshold (-m/s)", 100.0, 0, 1000)
                 .setDecimalFormat("0.00")
                 .setMessage("The value in -m/s of sink when the sink tone will start."));
 
 
-        parameters.add(new HardwareParameter("BOS", 6, HardwareParameter.TYPE_DOUBLE, "sinkOffThreshold", 100.0, 0, 1000)
+        parameters.add(new HardwareParameter("BOS", 6, HardwareParameter.TYPE_DOUBLE, "sinkOffThreshold (-m/s)", 100.0, 0, 1000)
                 .setDecimalFormat("0.00")
                 .setMessage("The value in -m/s of sink when the sink tone will stop."));
 
-        parameters.add(new HardwareParameter("BSQ", 6, HardwareParameter.TYPE_INT, "sinkFreqBase", 1.0, 250, 1000)
+        parameters.add(new HardwareParameter("BSQ", 6, HardwareParameter.TYPE_INT, "sinkFreqBase (Hz)", 1.0, 250, 1000)
                 .setMessage("The audio frequency for the sink tone in Hz of 0 m/s."));
 
-        parameters.add(new HardwareParameter("BSI", 6, HardwareParameter.TYPE_INT, "sinkFreqIncrement", 1.0, 0, 1000)
+        parameters.add(new HardwareParameter("BSI", 6, HardwareParameter.TYPE_INT, "sinkFreqIncrement (Hz)", 1.0, 0, 1000)
                 .setMessage("The decrease in audio frequency for sink tone in Hz for each -1 m/s."));
 
 
-        parameters.add(new HardwareParameter("BTH", 6, HardwareParameter.TYPE_INT, "secondsBluetoothWait", 1.0, 0, 10000)
+        parameters.add(new HardwareParameter("BTH", 6, HardwareParameter.TYPE_INT, "secondsBluetoothWait (s)", 1.0, 0, 10000)
                 .setMessage("The time that the hardware will be allow establishment of a bluetooth connection for when turned on."));
 
 
@@ -115,7 +115,7 @@ public class HardwareParameters {
         parameters.add(new HardwareParameter("BOF", 7, HardwareParameter.TYPE_INT, "outputFrequency", 1.0, 1, 50)
                 .setMessage("The output frequency -> 1-every 20ms ... 50-every 20msx50=1000ms"));
 
-        parameters.add(new HardwareParameter("BQH", 7, HardwareParameter.TYPE_INTOFFSET, "outputQNH", 80000.0, 0, 65535)
+        parameters.add(new HardwareParameter("BQH", 7, HardwareParameter.TYPE_INTOFFSET, "outputQNH (Pa)", 80000.0, 0, 65535)
                 .setMessage("QNH (in Pa), used for output alt for some output modes - (default 101325)"));
 
         //String code, int minHWVersion, int type, String name, double factor, int minHWVal, int maxHWVal) {
@@ -125,6 +125,12 @@ public class HardwareParameters {
         parameters.add(new HardwareParameter("BR2", 9, HardwareParameter.TYPE_INT, "uart2BRG", 1.0, 0, 655535)
                 .setMessage("BRG setting for UART1, baud = 2000000/(BRG-1) (default of 34 = approx 57.6k baud)"));
 
+        parameters.add(new HardwareParameter("BHV", 10, HardwareParameter.TYPE_INT, "heightSensitivityDm (dm)", 1.0, 0, 10000)
+                .setMessage("How far you have to move in dm to reset the idle timeout"));
+
+        parameters.add(new HardwareParameter("BHT", 10, HardwareParameter.TYPE_INT, "heightSeconds (s)", 1.0, 0, 10000)
+                .setMessage("Idle timeout"));
+
         parameters.add(new HardwareParameter("BPT", 9, HardwareParameter.TYPE_BOOLEAN, "uartPassthrough", 1.0, 0, 1)
                 .setMessage("Check to pass data received by U2 into U1"));
 
@@ -133,6 +139,14 @@ public class HardwareParameters {
 
         parameters.add(new HardwareParameter("BLD", 9, HardwareParameter.TYPE_BOOLEAN, "greenLED", 1.0, 0, 1)
                 .setMessage("Check to make green LED flash with beep"));
+
+        parameters.add(new HardwareParameter("BBZ", 10, HardwareParameter.TYPE_BOOLEAN, "useAudioBuzzer", 0.0, 0, 1)
+                .setMessage("Check to use the experimental audio buzzer"));
+
+        parameters.add(new HardwareParameter("BZT", 10, HardwareParameter.TYPE_DOUBLE, "buzzerThreshold (m/s)", 100.0, 0, 1000)
+                .setDecimalFormat("0.00")
+                .setMessage("The value in m/s below the liftThreshold when the buzzer will start."));
+
 
     }
 

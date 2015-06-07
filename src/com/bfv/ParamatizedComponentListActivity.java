@@ -24,6 +24,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -160,7 +161,7 @@ public class ParamatizedComponentListActivity extends Activity implements ColorP
 
 
     private boolean setParameterValue(String name, String value) {
-        //  Log.i("BFV", "setParam" + name + value);
+        Log.i("BFV", "setParam" + name + value);
         if (selectedComponent != null) {
             ArrayList<ViewComponentParameter> parameters = selectedComponent.getParameters();
 

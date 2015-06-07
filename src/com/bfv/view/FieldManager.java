@@ -48,6 +48,7 @@ public class FieldManager {
     public static final int FIELD_FLIGHT_ALT = 18;
     public static final int FIELD_PITOT_SPEED = 19;
     public static final int FIELD_PITOT_CALIBRATION = 20;
+    public static final int FIELD_GLIDE_RATIO = 21;
 
 
     private VarioSurfaceView surfaceView;
@@ -152,6 +153,9 @@ public class FieldManager {
         field.addUnits("mph", 2.23693629);
         field.addUnits("knts", 1.94384449);
         field.setDefaultMultiplierIndex(0);
+        fields.add(field);
+
+        field = new Field(FIELD_GLIDE_RATIO, "glideRatio", "0.0", "GlideRatio", "");
         fields.add(field);
 
 //        field = new Field(FIELD_PITOT_CALIBRATION, "pitotCalibration", "0.0", "pitotCalibration", "pa");
@@ -320,6 +324,11 @@ public class FieldManager {
                 } else {
                     return "--";
                 }
+
+                break;
+
+            case FIELD_GLIDE_RATIO:
+                value = bfvLocationManager.getGlideRatio();
 
                 break;
         }
