@@ -327,8 +327,8 @@ public class FieldManager {
         value = value * field.getUnitMultiplier(multiplierIndex);
 
         String ret = df.format(value);
-        if (ret.equals("-0.0")) {
-            ret = "0.0";
+        if (ret.equals(df.format(-Double.MIN_VALUE))) {
+            ret = df.format(0.0);
         }
 
         return ret;

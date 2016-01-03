@@ -201,8 +201,8 @@ public class VarioTraceViewComponent extends BFVViewComponent {
         canvas.drawRect(markRect, paint);
 
         String text = dfVarioScale1.format(scaleVar.getValue());
-        if (text.equals("-0.0")) {
-            text = "0.0";
+        if (text.equals(dfVarioScale1.format(-Double.MIN_VALUE))) {
+            text = dfVarioScale1.format(0.0);
         }
         paint.setStyle(Paint.Style.FILL);
         paint.getTextBounds(text, 0, text.length(), textBounds);
