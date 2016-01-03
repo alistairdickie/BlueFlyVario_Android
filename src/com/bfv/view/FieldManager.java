@@ -318,14 +318,6 @@ public class FieldManager {
                 }
 
                 break;
-            case FIELD_PITOT_CALIBRATION:
-                if (varioService.hasPressure()) {
-                    value = varioService.getPitotCalibration();
-                } else {
-                    return "--";
-                }
-
-                break;
 
             case FIELD_GLIDE_RATIO:
                 value = bfvLocationManager.getGlideRatio();

@@ -171,9 +171,9 @@ public class ConnectedThread extends Thread {
                 }
 
                 if (split.length > 2) {
-                    int pressure2 = Integer.parseInt(split[2], 16);
+                    double pitotDiff = Double.parseDouble(split[2]);
 
-                    service.updatePitotPressures(pressure2, pressure);
+                    service.updatePitotPressures(pitotDiff);
                 }
 
 

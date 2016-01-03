@@ -324,14 +324,8 @@
                 android:title="Hardware Settings"
                 android:summary="Set hardware settings on the connected BlueFly"
                 />
-        <!--
-        <Preference
-                        android:key="calibrate"
-                        android:title="Calibrate Pitot"
-                        android:summary="Recalibrate pitot"
-                        />
 
-        -->
+
         <Preference
                 android:key="about"
                 android:title="About"

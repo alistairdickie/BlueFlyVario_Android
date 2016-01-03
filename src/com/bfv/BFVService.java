@@ -157,7 +157,7 @@ public class BFVService {
             public void run() {
 
                 try {
-                    calibratePitot();
+
                     Thread.sleep(1000);
                     hasPressure = true;
                     setState(STATE_CONNECTEDANDPRESSURE);
@@ -405,52 +405,24 @@ public class BFVService {
 
     }
 
-    public synchronized void updatePitotPressures(int pitotPressure, int staticPressure) {
-
-        if (flagPitotCalibrated) {
-            pressureDiff = 0.95 * pressureDiff + 0.05 * (pitotPressure - staticPressure - pitotCalibration);
-            double root = 2 * pressureDiff / 1.2754;
-            if (root < 0) {
-                root = 0.0;
-            }
-            pitotSpeed = Math.sqrt(root);
-
-
-        } else {
-            pitotCalibrateCount++;
-            if (pitotCalibrateCount > 50) {
-                if (pitotCalibrateCount <= 500) {
-                    pitotCalibration += (pitotPressure - staticPressure);
-
-
-                } else {
-                    pitotCalibration = pitotCalibration / 450.0;
-                    pitotCalibrateCount = 0;
-                    flagPitotCalibrated = true;
-                }
-            }
+    public synchronized void updatePitotPressures(double pitotDiff) {
+//        Log.i("BFV", "prs " + pitotDiff + "");
+//        pressureDiff = 0.95 * pressureDiff + 0.05 * (pitotDiff);
+        double root = 2 * pitotDiff / 1.2754;
+        if (root < 0) {
+            root = 0.0;
         }
+        pitotSpeed = pitotSpeed * 0.98 + Math.sqrt(root) * 0.02;
+        //pitotSpeed = pitotDiff;
+
+
     }
 
     public synchronized double getPitotSpeed() {
-        if (flagPitotCalibrated) {
-            return pitotSpeed;
-        } else {
-            return -99.0;
-        }
+        return pitotSpeed;
 
     }
 
-    public synchronized void calibratePitot() {
-        flagPitotCalibrated = false;
-        pitotCalibrateCount = 0;
-        pitotSpeed = 0;
-        pressureDiff = 0;
-    }
-
-    public double getPitotCalibration() {
-        return pitotCalibration;
-    }
 
     public synchronized DataBuffer getDataBuffer() {
         return dataBuffer;

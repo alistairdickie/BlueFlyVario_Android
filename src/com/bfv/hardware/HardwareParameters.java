@@ -109,8 +109,8 @@ public class HardwareParameters {
                 .setDecimalFormat("0.000")
                 .setMessage("The volume of beeps ->  0.1 is only about 1/2 as loud as 1.0."));
 
-        parameters.add(new HardwareParameter("BOM", 7, HardwareParameter.TYPE_INT, "outputMode", 1.0, 0, 4)
-                .setMessage("The output mode -> 0-BlueFlyVario(default), 1-LK8EX1, 2-LX, 3-FlyNet, 4-Nothing."));
+        parameters.add(new HardwareParameter("BOM", 7, HardwareParameter.TYPE_INT, "outputMode", 1.0, 0, 6)
+                .setMessage("The output mode -> 0-BlueFlyVario(default), 1-LK8EX1, 2-LX, 3-FlyNet, 4-Nothing, 5-BFV, 6-BFX."));
 
         parameters.add(new HardwareParameter("BOF", 7, HardwareParameter.TYPE_INT, "outputFrequency", 1.0, 1, 50)
                 .setMessage("The output frequency -> 1-every 20ms ... 50-every 20msx50=1000ms"));
@@ -146,6 +146,9 @@ public class HardwareParameters {
         parameters.add(new HardwareParameter("BZT", 10, HardwareParameter.TYPE_DOUBLE, "buzzerThreshold (m/s)", 100.0, 0, 1000)
                 .setDecimalFormat("0.00")
                 .setMessage("The value in m/s below the liftThreshold when the buzzer will start."));
+
+        parameters.add(new HardwareParameter("BUP", 11, HardwareParameter.TYPE_BOOLEAN, "usePitot", 0.0, 0, 1)
+                .setMessage("Check to use the experimental MS4525DO pitot connected via I2C"));
 
 
     }
